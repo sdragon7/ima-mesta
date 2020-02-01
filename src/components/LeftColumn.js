@@ -11,7 +11,7 @@ const style = {
     backgroundColor : 'transparent',
     borderRadius : '0',
     boxShadow : 'none',
-    color: 'red',
+    color: 'green',
 
 }
 const [tabsToRender, setTabsToRender] = useState(props.tabsToRender);
