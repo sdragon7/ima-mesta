@@ -14,10 +14,11 @@ export class TableProvider extends React.Component {
                   this.setState({ tables: [{ 
                     id : 1, 
                     orders : [{
-                        product : { id : 1, name : 'Pivo', price : '120', quantity : 30},
-                        myTab : '1'
+                        product : { id : 1, name : 'Pivo', price : 120},
+                        quantity : 30,
+                        myTab : "1"
                     }], 
-                    total : 0,
+                    total : 3600,
                     isDraggable : true,
                     activeTab: "1",    
                     numberOfTabs : 2,
