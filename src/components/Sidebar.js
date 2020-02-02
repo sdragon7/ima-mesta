@@ -1,7 +1,6 @@
 
 import React, { useState, useContext } from 'react';
-import { Button } from 'reactstrap';
-import { TableProvider, TableConsumer } from './TableContext.js'
+import {  TableConsumer } from './TableContext.js'
 import {
     Collapse,
     Navbar,

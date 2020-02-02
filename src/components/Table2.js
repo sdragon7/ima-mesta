@@ -1,12 +1,7 @@
 import React, { Component } from "react";
 import Draggable, { DraggableCore } from "react-draggable"; // Both at the same time
-import { Table as TableBsr, Button, Nav, NavItem, NavLink } from "reactstrap";
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-import { TabPane, TabContent } from "reactstrap";
+import {  Button } from "reactstrap";
 import { Resizable } from "re-resizable";
-import ProductPicker from "./ProductPicker";
-import classnames from "classnames";
-import BottomScrollListener from 'react-bottom-scroll-listener';
 import { TableConsumer } from './TableContext.js'
 
 const style = {
@@ -18,28 +13,7 @@ const style = {
   borderRadius: "100px"
 };
 
-const products = [
-  {
-    id: 1,
-    price: 200,
-    name: "sok"
-  },
-  {
-    id: 2,
-    price: 110,
-    name: "kafa"
-  },
-  {
-    id: 3,
-    price: 150,
-    name: "voda"
-  },
-  {
-    id: 4,
-    price: 250,
-    name: "pivo"
-  }
-];
+
 
 export default class Table extends Component {
   constructor(props) {

@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import Table from  './Table';
 import Table2 from  './Table2';
 import LeftColumn from  './LeftColumn';
 import RightColumn from  './RightColumn';
-import { Button, Container, Row } from 'reactstrap';
+import {  Container, Row } from 'reactstrap';
 import Sidebar from './Sidebar'
-import { TableProvider, TableConsumer } from './TableContext.js'
+import {  TableConsumer } from './TableContext.js'
 
 
 export default class TableContainer extends Component {

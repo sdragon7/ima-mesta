@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, {  useState } from 'react';
 import { Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, Table as TableBsr } from 'reactstrap'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import classnames from "classnames";
@@ -23,7 +23,7 @@ const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
 const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
 
 const addNewTab = () => {  
-  setTabsToRender(prev => [...prev, {"tabNumber": "" +numberOfTabs}]) // ovo ne valja - mora "number"
+  setTabsToRender(prev => [...prev, {"tabNumber": "" +numberOfTabs}]) 
   setActiveTab(numberOfTabs)
   setNumberOfTabs(numberOfTabs + 1)
   console.log(tabsToRender)
@@ -50,7 +50,7 @@ const decreaseQuantity = (id, price) => {
   setOrders(orders
     .filter(order => order.product.id !== id || order.quantity !== 1 || (order.product.id === id && order.myTab !== activeTab))
     .map(order =>
-      (order.product.id === id && activeTab == order.myTab)
+      (order.product.id === id && activeTab === order.myTab)
         ? Object.assign({}, order, { quantity: order.quantity - 1 })
         : order
     ))
