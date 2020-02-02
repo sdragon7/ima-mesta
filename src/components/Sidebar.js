@@ -17,8 +17,6 @@ import {
     NavbarText
   } from 'reactstrap';
   
-  
-  
 export default function Sidebar(props) {
     
         const [isOpen, setIsOpen] = useState(false);
@@ -69,22 +67,5 @@ export default function Sidebar(props) {
           <NavbarText>debilcine</NavbarText>
         </Collapse>
       </Navbar>
-
-
-        // <div className="sidebar">
-        //     <TableConsumer>
-        //         {
-        //             context => {
-        //                 return (
-        //                     <>
-        //                         <Button className = "btn-xl" style = {{"width" : "100%"}} onClick={context.addTable} >DODAJ</Button>
-        //                         <Button className = "btn-xl" style = {{"width" : "100%"}} >OBRISI</Button>
-        //                     </>
-        //                 )
-        //             }
-        //         }
-        //     </TableConsumer>
-        // </div>
-
     )
     }
