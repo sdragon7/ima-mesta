@@ -10,18 +10,17 @@ const style = {
     height : 'calc(100vh - 100px)',
     backgroundColor : 'transparent',
     borderRadius : '0',
-    boxShadow : 'none',
-    color: 'green',
+    boxShadow : 'none'
 
 }
-const [tabsToRender, setTabsToRender] = useState(props.tabsToRender);
-const [tableNumber, setTableNumber] = useState(props.tableNumber);
-const [tableColor, setTableColor] = useState(props.tableColor);
-const [orders, setOrders] = useState(props.orders);
-const [total, setTotal] = useState(props.total);
-const [activeTab, setActiveTab] = useState(props.total);
-const [isDraggable, setIsDraggable] = useState(props.isDraggable);
-const [numberOfTabs, setNumberOfTabs] = useState(props.numberOfTabs)
+const [tabsToRender, setTabsToRender] = useState(props.table.tabsToRender);
+const [tableNumber, setTableNumber] = useState(props.table.tableNumber);
+const [tableColor, setTableColor] = useState(props.table.tableColor);
+const [orders, setOrders] = useState(props.table.orders);
+const [total, setTotal] = useState(props.table.total);
+const [activeTab, setActiveTab] = useState(props.table.total);
+const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
+const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
 const addNewTab = () => {
   
   setTabsToRender(prev => [...prev, {"tabNumber": numberOfTabs}])
@@ -63,7 +62,7 @@ const addNewTab = () => {
               <NavItem>
                  
                     <Button  color = "success"onClick={() => {
-                               this.addNewTab()
+                               addNewTab()
                     }}> + </Button>
                 
                 </NavItem>
