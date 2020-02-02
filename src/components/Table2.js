@@ -63,70 +63,8 @@ export default class Table extends Component {
 
   }
 
-  updateTotal = () => {
-    let total = 0;
-    this.state.orders.forEach(
-      order => (total = total + order.product.price * order.quantity)
-    );
-    this.setState({ total: total });
-  };
 
-  increaseQuantity = (id, price) => {
-    const { orders, total, activeTab } = this.state;
-    this.setState({
-      total: total + price,
-      orders: orders.map(order =>
-        (order.product.id === id && activeTab == order.myTab)
-          ? Object.assign({}, order, { quantity: order.quantity + 1 })
-          : order
-      )
-    });
-  };
 
-  decreaseQuantity = (id, price) => {
-    const { orders, total, activeTab } = this.state;
-    this.setState({
-      modal:
-        orders.length === 1 &&
-        orders.filter(o => o.product.id === id && activeTab == o.myTab)[0].quantity === 1
-          ? false
-          : true,
-      isDraggable:
-      orders.length === 1 &&
-      orders.filter(o => o.product.id === id && activeTab == o.myTab)[0].quantity === 1
-        ? true
-        : false,
-      tableColor:
-        orders.length === 1 &&
-        orders.filter(o => o.product.id === id && activeTab == o.myTab)[0].quantity === 1
-          ? "success"
-          : "danger",
-      total: total - price,
-      orders: orders
-        .filter(order => order.product.id !== id || order.quantity !== 1 || (order.product.id === id && order.myTab !== activeTab))
-        .map(order =>
-          (order.product.id === id && activeTab == order.myTab)
-            ? Object.assign({}, order, { quantity: order.quantity - 1 })
-            : order
-        )
-    });
-    console.log(this.state.orders);
-    if (this.state.orders.length === 0) {
-      this.setState({isDraggable : true, modal: false, activeTab: "1" });
-    }
-  };
-
-  checkPlease = () => {
-    this.setState({
-      tableColor: "success",
-      numberOfTabs : 2,
-      tabsToRender : [{tabNumber : "1"}],
-      total: 0,
-      orders: [],
-      modal: false,
-      isDraggable : true
-    });
-  };
 
   addToOrder = (prod, quan) => {
     const { total, orders, activeTab } = this.state;
@@ -163,12 +101,10 @@ export default class Table extends Component {
     const {
       tableNumber,
       tableColor,
-      modal,
-      orders,
-      total,
-      activeTab,
-      isDraggable
-    } = this.props;
+      isDraggable, 
+      total
+    } = this.props.table;
+    console.log("STO " + tableNumber + " in render")
     return (
       <Draggable defaultPosition={{ x: 25, y: 111 }} onStart = {() => isDraggable}>
         <Resizable
@@ -187,9 +123,12 @@ export default class Table extends Component {
               height: "100%",
               borderRadius: "100px"
             }}
-            onClick={() => {
-              this.props.setSelectedId(tableNumber);
-            }}
+           
+            onClick = {
+              () => {
+                console.log("STO" + tableNumber)
+              }
+            }
             onDoubleClick={() => {
               this.props.setActiveTable(this.props.table);
             }}
