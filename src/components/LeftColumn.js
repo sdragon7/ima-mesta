@@ -21,17 +21,15 @@ const [total, setTotal] = useState(props.table.total);
 const [activeTab, setActiveTab] = useState(props.table.total);
 const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
 const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
-
-const addNewTab = () => {  
+const addNewTab = () => {
+  
   setTabsToRender(prev => [...prev, {"tabNumber": numberOfTabs}])
   setActiveTab(numberOfTabs)
   setNumberOfTabs(numberOfTabs + 1)
 
 }
 
-const toggleTab = tab => {
-  if (activeTab !== tab) setActiveTab(tab);
-};
+
 
 
     return(
@@ -46,7 +44,7 @@ const toggleTab = tab => {
                         <NavItem>
                         <NavLink
                           className={classnames({ active: activeTab === ttRender.tabNumber })}
-                          onClick={() => { toggleTab(ttRender.tabNumber); }}
+                          
                         >
                           Racun {' '} {ttRender.tabNumber}
                         </NavLink>
