@@ -39,7 +39,7 @@ export class TableProvider extends React.Component {
                     numberOfTabs : 2,
                     tabsToRender : [{tabNumber : "1"}],
                     tableNumber: maxVal, //visak
-                    tableColor: "danger"                
+                    tableColor: "success"                
                   } ]
                   this.setState({tables: newTables})
                 }
