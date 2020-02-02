@@ -175,6 +175,9 @@ const checkPlease = () => {
                   <h3>Ukupno za sto : {total}</h3>
                   <div>
                     <Button color = "success" onClick = { () => {checkPlease()}} > NAPLATI </Button>
+                    {' '}
+                    <Button onClick = { () => {props.showTableView()}} > NAZAD </Button>
+
                   </div>
                 </TabPane>
                     )
