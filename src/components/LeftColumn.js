@@ -18,7 +18,7 @@ const [tableNumber, setTableNumber] = useState(props.table.tableNumber);
 const [tableColor, setTableColor] = useState(props.table.tableColor);
 const [orders, setOrders] = useState(props.table.orders);
 const [total, setTotal] = useState(props.table.total);
-const [activeTab, setActiveTab] = useState(props.table.total);
+const [activeTab, setActiveTab] = useState(props.table.activeTab);
 const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
 const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
 
@@ -100,8 +100,8 @@ const toggleTab = tab => {
                                   <tr key={order.product.id}>
                                     <td>{order.product.name}</td>
                                     {/* <td>{order.product.price}</td> */}
-                                    <td>{order.quantity}</td>
-                                    <td>{order.quantity * order.product.price}</td>
+                                    <td>{order.product.quantity}</td>
+                                    <td>{order.product.quantity * order.product.price}</td>
                                     <td>
                                       <Button
                                         color="success"
