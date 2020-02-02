@@ -8,44 +8,63 @@ export class TableProvider extends React.Component {
         super(props)
         this.state = {
             tables : [],
-            addTable: () => {
-                const { tables } = this.state
-                if(tables.length === 0) {
-                  this.setState({ tables: [{ 
-                    id : 1, 
-                    orders : [{
-                        product : { id : 1, name : 'Pivo', price : 120},
-                        quantity : 30,
-                        myTab : "1"
-                    }], 
-                    total : 3600,
-                    isDraggable : true,
-                    activeTab: "1",    
-                    numberOfTabs : 2,
-                    tabsToRender : [{tabNumber : "1"}],
-                    tableNumber: 1, //visak
-                    tableColor: "danger"                
-                    }]})
-                }
-                else {
-                  let maxVal = Math.max.apply(Math, tables.map(function(obj) { return obj.id; }));
-                  maxVal++;
-                  const newTables = [...tables, {
-                    id : maxVal, 
-                    orders : [], 
-                    total : 0,
-                    isDraggable : true,
-                    activeTab: "1",    
-                    numberOfTabs : 2,
-                    tabsToRender : [{tabNumber : "1"}],
-                    tableNumber: maxVal, //visak
-                    tableColor: "success"                
-                  } ]
-                  this.setState({tables: newTables})
-                }
-              }
-        
+            addTable: this.addTable,
+            deleteTable : this.deleteTable,
+            setSelectedTableNumber : (selectedTableNumber) => {
+                this.setState({selectedTableNumber})
+            },
+            selectedTableNumber : -1     
         }
+    }
+
+
+
+
+    addTable = () => {
+        const { tables } = this.state
+        if(tables.length === 0) {
+          this.setState({ tables: [{ 
+            orders : [{
+                product : { id : 1, name : 'Pivo', price : 120},
+                quantity : 30,
+                myTab : "1"
+            }], 
+            total : 3600,
+            isDraggable : true,
+            activeTab: "1",    
+            numberOfTabs : 2,
+            tabsToRender : [{tabNumber : "1"}],
+            tableNumber: 1, //visak
+            tableColor: "danger"                
+            }]})
+        }
+        else {
+          let maxVal = Math.max.apply(Math, tables.map(function(obj) { return obj.tableNumber; }));
+          maxVal++;
+          const newTables = [...tables, {
+            orders : [], 
+            total : 0,
+            isDraggable : true,
+            activeTab: "1",    
+            numberOfTabs : 2,
+            tabsToRender : [{tabNumber : "1"}],
+            tableNumber: maxVal, //visak
+            tableColor: "success"                
+          } ]
+          this.setState({tables: newTables})
+        }
+      }
+
+    deleteTable = () => {
+
+        const {selectedTableNumber} = this.state;
+        if(selectedTableNumber < 0) return;
+        const { tables } = this.state;
+        this.setState(
+            {
+                tables : tables.filter(t => (t.tableNumber !== selectedTableNumber))
+            }
+        )
     }
 
     render() {

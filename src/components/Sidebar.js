@@ -39,7 +39,7 @@ export default function Sidebar(props) {
                                     <NavLink onClick={context.addTable} >Dodaj</NavLink>
                                 </NavItem>
                                 <NavItem style={{cursor : 'pointer'}}>
-                                    <NavLink>Obrisi</NavLink>
+                                    <NavLink onClick= {context.deleteTable}>Obrisi</NavLink>
                                 </NavItem>
                             </>
                          )

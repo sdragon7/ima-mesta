@@ -14,7 +14,6 @@ export default class TableContainer extends Component {
 
       this.state = {
         tables:[],
-        selectedTableId : -1,
         showTables : true,
         table : null
       };
@@ -30,10 +29,7 @@ export default class TableContainer extends Component {
     //   this.setState({ selectedTableId : -1, tables : tables.filter(table => (table.id !== selectedTableId))});
     // }
 
-    setSelectedId = (childData) => {
-      this.setState({selectedTableId: childData})
-      
-    }
+    
 
     setActiveTable = (table) => {
         this.setState({ table, showTables : false }, () => console.log(table))
