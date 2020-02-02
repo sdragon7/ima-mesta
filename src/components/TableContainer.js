@@ -39,6 +39,10 @@ export default class TableContainer extends Component {
         this.setState({ table, showTables : false }, () => console.log(table))
     }
 
+    showTableView =() => {
+        this.setState({showTables : true})
+    }
+
     render () {
         const {showTables} = this.state;
         return (
@@ -53,7 +57,6 @@ export default class TableContainer extends Component {
                               returnTables.push(<div key = {table.id}>
                                 <Table2 
                                   table = {table} 
-                                  setSelectedId = {this.setSelectedId}
                                   setActiveTable = {this.setActiveTable}
                                   ></Table2>
                               </div>)
@@ -64,7 +67,7 @@ export default class TableContainer extends Component {
                         else return (
                           <Container fluid>
                           <Row>
-                            <LeftColumn table = {this.state.table}></LeftColumn>
+                            <LeftColumn table = {this.state.table} showTableView = {this.showTableView}></LeftColumn>
                             <RightColumn></RightColumn>
                           </Row>
                         </Container>
