@@ -23,15 +23,52 @@ const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
 const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
 
 const addNewTab = () => {  
-  setTabsToRender(prev => [...prev, {"tabNumber": numberOfTabs}])
+  setTabsToRender(prev => [...prev, {"tabNumber": "" +numberOfTabs}]) // ovo ne valja - mora "number"
   setActiveTab(numberOfTabs)
   setNumberOfTabs(numberOfTabs + 1)
+  console.log(tabsToRender)
 
 }
 
 const toggleTab = tab => {
   if (activeTab !== tab) setActiveTab(tab);
 };
+
+const increaseQuantity = (id, price) => {
+  setTotal(total + price);
+  setOrders(
+    orders.map(order =>
+      (order.product.id === id && activeTab === order.myTab)
+      ? {...order, quantity : order.quantity + 1}
+      : order)
+
+  )
+};
+
+const decreaseQuantity = (id, price) => {
+  setTotal(total - price);
+  setOrders(orders
+    .filter(order => order.product.id !== id || order.quantity !== 1 || (order.product.id === id && order.myTab !== activeTab))
+    .map(order =>
+      (order.product.id === id && activeTab == order.myTab)
+        ? Object.assign({}, order, { quantity: order.quantity - 1 })
+        : order
+    ))
+
+    // ovde treba i ako je order lista prazna smanjenjem da sto pozeleni
+}
+
+const checkPlease = () => {
+  setTableColor("success");
+  setNumberOfTabs(2);
+  setTabsToRender( [{tabNumber : "1"}]);
+  setTotal(0);
+  setOrders([]);
+  setIsDraggable(true);
+
+  // call callback to tableview
+};
+
 
 
     return(
@@ -99,13 +136,13 @@ const toggleTab = tab => {
                                   <tr key={order.product.id}>
                                     <td>{order.product.name}</td>
                                     {/* <td>{order.product.price}</td> */}
-                                    <td>{order.product.quantity}</td>
-                                    <td>{order.product.quantity * order.product.price}</td>
+                                    <td>{order.quantity}</td>
+                                    <td>{order.quantity * order.product.price}</td>
                                     <td>
                                       <Button
                                         color="success"
                                         onClick={() => {
-                                 
+                                          increaseQuantity(order.product.id, order.product.price);
                                         }}
                                       >
                                         +
@@ -115,7 +152,8 @@ const toggleTab = tab => {
                                       <Button
                                         color="danger"
                                         onClick={() => {
-                                          
+                                          decreaseQuantity(order.product.id, order.product.price);
+
                                         }}
                                       >
                                         -
@@ -135,7 +173,9 @@ const toggleTab = tab => {
                           )}
                   </BottomScrollListener>
                   <h3>Ukupno za sto : {total}</h3>
-
+                  <div>
+                    <Button color = "success" onClick = { () => {checkPlease()}} > NAPLATI </Button>
+                  </div>
                 </TabPane>
                     )
 
