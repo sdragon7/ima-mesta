@@ -88,7 +88,7 @@ export default function KeyPad(props) {
 
                         <div style = {innerDivStyle}  >
 
-                        <input type="password" value = {pincode} name="password" style = {passwordEntryStyle} />
+                        <input type="password" value = {pincode} name="password" style = {passwordEntryStyle} onChange = {(e) => {setPincode(e.target.value)}} />
 
                         <div style = { charStyle } onClick = {() => {setPincode(pincode.slice(0, pincode.length-1))}}
                         
