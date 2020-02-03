@@ -13,9 +13,13 @@ export class TableProvider extends React.Component {
             setSelectedTableNumber : (selectedTableNumber) => {
                 this.setState({selectedTableNumber})
             },
-            selectedTableNumber : -1     
+            selectedTableNumber : -1
+            ,
+            updateCoordinatesOfSelectedTable : this.updateCoordinatesOfSelectedTable     
         }
     }
+
+
 
 
 
@@ -35,7 +39,12 @@ export class TableProvider extends React.Component {
             numberOfTabs : 2,
             tabsToRender : [{tabNumber : "1"}],
             tableNumber: 1, //visak
-            tableColor: "danger"                
+            tableColor: "danger",
+            controlledPosition    : {
+                x : 25,
+                y : 25
+            }
+
             }]})
         }
         else {
@@ -49,7 +58,12 @@ export class TableProvider extends React.Component {
             numberOfTabs : 2,
             tabsToRender : [{tabNumber : "1"}],
             tableNumber: maxVal, //visak
-            tableColor: "success"                
+            tableColor: "success",
+            controlledPosition    : {
+                x : 25 * maxVal,
+                y : 25* maxVal
+            }
+                
           } ]
           this.setState({tables: newTables})
         }
@@ -65,6 +79,27 @@ export class TableProvider extends React.Component {
                 tables : tables.filter(t => (t.tableNumber !== selectedTableNumber))
             }
         )
+    }
+
+
+    updateCoordinatesOfSelectedTable = (controlledPosition, tableNumber) => {
+        const {selectedTableNumber, tables } = this.state;
+   
+        this.setState(
+            {
+                tables : 
+                    tables.map(
+                        t => (t.tableNumber !== tableNumber) ?
+                            t
+                            :
+                           {...t, controlledPosition : controlledPosition}
+                    )
+            
+            }
+        )
+
+   
+
     }
 
     render() {

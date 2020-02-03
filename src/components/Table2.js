@@ -20,10 +20,16 @@ export default class Table extends Component {
     super(props);
 
     this.myRef = React.createRef();
+
+    this.state = {
+      controlledPosition : this.props.table.controlledPosition
+    }
   }
 
   componentDidMount() {
   }
+
+
 
   scrollToBottom = () => {
     this.myRef.scrollIntoView({behaviour : "smooth", block:"end" , inline :"nearest"})
@@ -38,7 +44,10 @@ export default class Table extends Component {
 
   }
 
-
+  onControlledDrag = (e, position) => {
+    const {x, y} = position;
+    this.setState({controlledPosition: {x, y}});
+  };
 
 
   // addToOrder = (prod, quan) => {
@@ -77,11 +86,17 @@ export default class Table extends Component {
       tableNumber,
       tableColor,
       isDraggable, 
-      total
+      total,
     } = this.props.table;
-    console.log("STO " + tableNumber + " in render")
+
+    const {
+      controlledPosition
+    } = this.state;
+
+
     return (
-      <Draggable defaultPosition={{ x: 25, y: 111 }} onStart = {() => isDraggable}>
+      <Draggable  position={controlledPosition} onStart = {() => isDraggable}  onDrag={this.onControlledDrag} onStop= {() => {this.props.updateCoordinatesOfSelectedTable(controlledPosition, tableNumber);
+    }}>
         <Resizable
           style={style}
           defaultSize={{

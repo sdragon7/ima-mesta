@@ -53,6 +53,7 @@ export default class TableContainer extends Component {
                                 <Table2 
                                   table = {table} 
                                   setActiveTable = {this.setActiveTable}
+                                  updateCoordinatesOfSelectedTable = {context.updateCoordinatesOfSelectedTable}
                                   ></Table2>
                               </div>)
                           })
