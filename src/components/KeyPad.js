@@ -1,9 +1,31 @@
-import React, {  useState } from 'react';
+import React, {  useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, Table as TableBsr } from 'reactstrap'
 import {FaBackspace} from 'react-icons/fa';
 
 
 export default function KeyPad(props) {
+
+
+
+    const [pincode, setPincode] = useState("");
+    const [startLongPress, setStartLongPress] = useState(false);
+
+
+
+    useEffect(() => {
+        let timerId;
+        if (startLongPress) {
+          timerId = setTimeout(() => {setPincode("")},  1500);
+        } else {
+          clearTimeout(timerId);
+        }
+    
+        return () => {
+          clearTimeout(timerId);
+        };
+      }, [startLongPress]);
+
+  
 
 
     const style = {
@@ -50,6 +72,8 @@ export default function KeyPad(props) {
         textAlign : "center"
 
     }
+
+
     return (
         <Container>
             <Row>
@@ -64,9 +88,18 @@ export default function KeyPad(props) {
 
                         <div style = {innerDivStyle}  >
 
-                        <input type="password" name="password" style = {passwordEntryStyle} />
+                        <input type="password" value = {pincode} name="password" style = {passwordEntryStyle} />
 
-                        <div style = { charStyle }>
+                        <div style = { charStyle } onClick = {() => {setPincode(pincode.slice(0, pincode.length-1))}}
+                        
+                        
+                        
+                        onMouseDown = {() => setStartLongPress(true)}
+                        onMouseUp = {() => setStartLongPress(false)}
+                        onMouseLeave = {() => setStartLongPress(false)} 
+                        onTouchStart = {() => setStartLongPress(true)}
+                        onTouchEnd = {() => setStartLongPress(false)}
+                        >
                              <FaBackspace/>
                         </div>
 
@@ -75,7 +108,9 @@ export default function KeyPad(props) {
                                    char =>
                                    {
                                        return (
-                                            <div style = { charStyle }>
+                                            <div style = { charStyle } onClick = {() => {
+                                                setPincode(pincode + "" + char)
+                                            }}>
                                                { char }
                                             </div>
                                        )
