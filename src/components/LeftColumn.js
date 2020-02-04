@@ -1,5 +1,5 @@
-import React, {  useState } from 'react';
-import { Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, Table as TableBsr } from 'reactstrap'
+import React, {  useState, useEffect } from 'react';
+import { Input, Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, Table as TableBsr } from 'reactstrap'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import classnames from "classnames";
 
@@ -21,6 +21,12 @@ const [total, setTotal] = useState(props.table.total);
 const [activeTab, setActiveTab] = useState(props.table.activeTab);
 const [isDraggable, setIsDraggable] = useState(props.table.isDraggable);
 const [numberOfTabs, setNumberOfTabs] = useState(props.table.numberOfTabs)
+
+
+useEffect(() => {
+  // Update the document title using the browser API
+  console.log(orders)
+},[orders]);
 
 const addNewTab = () => {  
   setTabsToRender(prev => [...prev, {"tabNumber": "" +numberOfTabs}]) 
@@ -134,6 +140,7 @@ const checkPlease = () => {
                               {orders.filter(o => (o.myTab === activeTab)).map(order => {
                                 return (
                                   <tr key={order.product.id}>
+                                  
                                     <td>{order.product.name}</td>
                                     {/* <td>{order.product.price}</td> */}
                                     <td>{order.quantity}</td>
@@ -153,12 +160,30 @@ const checkPlease = () => {
                                         color="danger"
                                         onClick={() => {
                                           decreaseQuantity(order.product.id, order.product.price);
-
                                         }}
                                       >
                                         -
                                       </Button>
                                     </td>
+                                    <td >
+                                    <input  type="checkbox" 
+                                            id= {order.product.id} 
+                                            name={order.product.id}
+                                            value ={order.product.id}  
+                                            checked = {order.checked}
+                                            onClick={() =>{
+                                              console.log('call'+ order.product.id)
+                                              setOrders(orders.map(o => {
+                                                if(order.product.id !== o.product.id) return o;
+                                                else return {...order, checked : !order.checked}
+                                                
+                                              }))    
+
+                                            }}
+                                    />
+                                      <label htmlFor= {order.product.id}></label>                                    
+                                    </td>
+
                                   </tr>
                                 );
                               })}

@@ -50,10 +50,19 @@ export class TableProvider extends React.Component {
         if(tables.length === 0) {
           this.setState({ tables: [{ 
             orders : [{
+                checked: true,
                 product : { id : 1, name : 'Pivo', price : 120},
                 quantity : 30,
                 myTab : "1"
-            }], 
+            },
+            {
+                checked: true,
+                product : { id : 2, name : 'Sok', price : 120},
+                quantity : 15,
+                myTab : "1"
+            }
+            
+            ], 
             total : 3600,
             isDraggable : true,
             activeTab: "1",    
