@@ -15,7 +15,7 @@ function App() {
     <div className="App">
    
       <Idle
-      timeout = {10000}
+      timeout = {100000}
       onChange={({ idle }) => setLocked(true)}
      
       />

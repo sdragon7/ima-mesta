@@ -7,6 +7,10 @@ export class TableProvider extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            loggedInUser : {
+                token : "",
+                username : "whatever"
+            },
             tables : [],
             addTable: this.addTable,
             deleteTable : this.deleteTable,
@@ -15,13 +19,30 @@ export class TableProvider extends React.Component {
             },
             selectedTableNumber : -1
             ,
-            updateCoordinatesOfSelectedTable : this.updateCoordinatesOfSelectedTable     
+            updateCoordinatesOfSelectedTable : this.updateCoordinatesOfSelectedTable
+            ,
+            temporaryTable :       { 
+                orders : [{
+              
+                }], 
+                total : 0,
+                isDraggable : true,
+                activeTab: "1",    
+                numberOfTabs : 2,
+                tabsToRender : [{tabNumber : "1"}],
+                tableNumber: 10000,
+                tableColor: "danger",
+                controlledPosition    : {
+                    x : 0,
+                    y : 0
+                }       
+                }
         }
     }
 
 
 
-
+   
 
 
     addTable = () => {

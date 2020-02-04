@@ -42,7 +42,7 @@ export default class TableContainer extends Component {
         const {showTables} = this.state;
         return (
           <>
-          <Sidebar />
+          <Sidebar setActiveTable = {this.setActiveTable} />
           <TableConsumer>
                 {
                     context => {
