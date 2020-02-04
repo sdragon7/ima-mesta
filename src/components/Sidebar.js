@@ -33,17 +33,29 @@ export default function Sidebar(props) {
                     <Collapse isOpen={isOpen} navbar>
                       <Nav className="mr-auto" navbar>
                         <>
-                          <NavItem style={{cursor : 'pointer'}}>
-                            <NavLink onClick={context.addTable} >Dodaj</NavLink>
-                          </NavItem>
-                          <NavItem style={{cursor : 'pointer'}}>
-                            <NavLink onClick= {context.deleteTable}>Obrisi</NavLink>
-                          </NavItem>
-                          <NavItem style= {{cursor : "pointer"}}>
-                            <NavLink onClick = {() => props.setActiveTable(context.temporaryTable)}>
-                              Za poneti
-                            </NavLink>
-                          </NavItem>
+                          {
+                            props.showTables 
+                              ?
+                              <>
+                              <NavItem style={{cursor : 'pointer'}}>
+                                <NavLink onClick={context.addTable} >Dodaj</NavLink>
+                              </NavItem>
+                              <NavItem style={{cursor : 'pointer'}}>
+                                <NavLink onClick= {context.deleteTable}>Obrisi</NavLink>
+                              </NavItem>
+                              <NavItem style= {{cursor : "pointer"}}>
+                                <NavLink onClick = {() => props.setActiveTable(context.temporaryTable)}>
+                                  Za poneti
+                                </NavLink>
+                              </NavItem>
+                              </>
+                              : 
+
+                              <>
+                              </>
+                          }
+                         
+                        
                         </>
                         <UncontrolledDropdown nav inNavbar>
                           <DropdownToggle nav caret>

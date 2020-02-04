@@ -14,6 +14,7 @@ export class TableProvider extends React.Component {
             tables : [],
             addTable: this.addTable,
             deleteTable : this.deleteTable,
+            updateTable : this.updateTable,
             setSelectedTableNumber : (selectedTableNumber) => {
                 this.setState({selectedTableNumber})
             },
@@ -60,14 +61,20 @@ export class TableProvider extends React.Component {
                 product : { id : 2, name : 'Sok', price : 120},
                 quantity : 15,
                 myTab : "1"
+            },
+            {
+                checked: true,
+                product : { id : 3, name : 'whatever', price : 100},
+                quantity : 17,
+                myTab : "2"
             }
             
             ], 
-            total : 3600,
+            total : 0,
             isDraggable : true,
             activeTab: "1",    
-            numberOfTabs : 2,
-            tabsToRender : [{tabNumber : "1"}],
+            numberOfTabs : 3,
+            tabsToRender : [{tabNumber : "1"}, { tabNumber : "2"}],
             tableNumber: 1, //visak
             tableColor: "danger",
             controlledPosition    : {
@@ -111,6 +118,18 @@ export class TableProvider extends React.Component {
         )
     }
 
+    updateTable = (myTable) => {
+        const { tables } = this.state;
+        this.setState(
+            {
+                tables : tables.map(t => {
+                    if(t.tableNumber !== myTable.tableNumber) return t;
+                    else return myTable;
+                })
+            }
+        )
+
+    }
 
     updateCoordinatesOfSelectedTable = (controlledPosition, tableNumber) => {
         const {selectedTableNumber, tables } = this.state;
