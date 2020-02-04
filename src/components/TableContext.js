@@ -23,9 +23,7 @@ export class TableProvider extends React.Component {
             updateCoordinatesOfSelectedTable : this.updateCoordinatesOfSelectedTable
             ,
             temporaryTable :       { 
-                orders : [{
-              
-                }], 
+                orders : [], 
                 total : 0,
                 isDraggable : true,
                 activeTab: "1",    

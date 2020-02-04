@@ -27,17 +27,17 @@ const [totalSelected, setTotalSelected] = useState(props.table.total);
 useEffect(() => {
   calculateTotals();
   
-},[orders]);
+},[orders, activeTab]);
 
 const calculateTotals = () => {
     let ts = 0;
     let t = 0;
     if(orders.length > 0) {
       orders.forEach((o) => {
-        if(o.checked) {
+        if(o.checked && o.myTab === activeTab) {
           ts += o.quantity * o.product.price
         }
-        t +=o.quantity * o.product.price;
+        t += o.quantity * o.product.price;
       })
 
     }
