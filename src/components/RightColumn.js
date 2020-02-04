@@ -70,13 +70,17 @@ export default function RightColumn(props) {
         .then(res => res.json())
         .then(
           (result) => {
+              if(Object.keys(result).length != 0) {
                 setProductCategories(result)
                 setIsloading(false)
                 setActiveProductCategory(result[0])
                 setActiveProductCategoryItem(result[0].items[0])
+              } else 
+                    setIsloading(true)
+                
           },
           (error) => {
-           
+
           }
         )
     }, [])

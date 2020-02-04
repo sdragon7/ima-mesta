@@ -9,6 +9,7 @@ export default function KeyPad(props) {
 
     const [pincode, setPincode] = useState("");
     const [startLongPress, setStartLongPress] = useState(false);
+    const [isLogged, setIsLogged] = useState(false)
 
 
 
@@ -108,8 +109,32 @@ export default function KeyPad(props) {
                                    char =>
                                    {
                                        return (
-                                            <div style = { charStyle } onClick = {() => {
-                                                setPincode(pincode + "" + char)
+                                            <div 
+                                                style = { charStyle } 
+                                                onClick = {() => {
+                                                    setPincode(pincode + "" + char)
+                                                    if((pincode + "" + char).length >= 8) {
+                                                        const input = {
+                                                            password : (pincode + "" + char)
+                                                        };
+                                                        fetch("http://localhost:8080/login", {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json'
+                                                              },
+                                                              body: JSON.stringify(input)
+                                                        })
+                                                        .then(res => res.json())
+                                                        .then(
+                                                        (result) => {
+                                                            props.isUserLogged(true)
+                                                                
+                                                        },
+                                                        (error) => {
+                                                            props.isUserLogged(false)
+                                                        }
+                                                        )
+                                                    }
                                             }}>
                                                { char }
                                             </div>

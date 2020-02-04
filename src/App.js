@@ -8,8 +8,13 @@ import Idle from 'react-idle';
 function App() {
 
   const [locked, setLocked] = useState(false);
+  const [isLogged, setIsLogged] = useState(false)
 
-
+  const isUserLogged = (value) => {
+    setIsLogged(value)
+    setLocked(false)
+  }
+  
 
   return (
     <div className="App">
@@ -25,7 +30,7 @@ function App() {
           ? 
           <>
             <h1>You have been inactive for 10 secs</h1>
-            <KeyPad/>
+            <KeyPad isUserLogged={isUserLogged} />
           </>
           : 
           <TableProvider>
