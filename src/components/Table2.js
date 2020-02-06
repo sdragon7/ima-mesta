@@ -27,6 +27,7 @@ export default class Table extends Component {
   }
 
   componentDidMount() {
+    console.log(' I mounted! ' + this.props.table.tableNumber)
   }
 
 

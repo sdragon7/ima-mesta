@@ -48,9 +48,10 @@ export default class TableContainer extends Component {
                     context => {
                       let returnTables = []
                         if(showTables) {
-                            context.floors.filter(floor => (floor.floorName === context.currentFloorName))[0].tables.map(table => {
+                            context.floors.filter(floor => (floor.floorName === context.currentFloorName))[0].tables.map((table, index) => {
                               returnTables.push(<div key = {table.id}>
                                 <Table2 
+                                  key = {context.currentFloorName + index }
                                   table = {table} 
                                   setActiveTable = {this.setActiveTable}
                                   updateCoordinatesOfSelectedTable = {context.updateCoordinatesOfSelectedTable}
