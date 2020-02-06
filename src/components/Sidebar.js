@@ -48,6 +48,19 @@ export default function Sidebar(props) {
                                   Za poneti
                                 </NavLink>
                               </NavItem>
+                              {
+                                context.floorNames.map(
+                                  fName => {
+                                    return (
+                                      <NavItem style= {{cursor : "pointer"}}>
+                                      <NavLink onClick = {() => context.setCurrentFloorName(fName)}>
+                                        {fName}
+                                      </NavLink>
+                                      </NavItem>
+                                    )
+                                  }
+                                )
+                              }
                               </>
                               : 
 

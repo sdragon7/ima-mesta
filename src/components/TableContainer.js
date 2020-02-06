@@ -48,7 +48,7 @@ export default class TableContainer extends Component {
                     context => {
                       let returnTables = []
                         if(showTables) {
-                            context.tables.map(table => {
+                            context.floors.filter(floor => (floor.floorName === context.currentFloorName))[0].tables.map(table => {
                               returnTables.push(<div key = {table.id}>
                                 <Table2 
                                   table = {table} 

@@ -205,7 +205,7 @@ const checkPlease = () => {
                                           id= {order.product.id} 
                                           name={order.product.id}
                                           value ={order.product.id}  
-                                          checked = {order.checked}
+                                          defaultChecked = {order.checked}
                                           onClick={() =>{
                                             setOrders(orders.map(o => {
                                               if(order.product.id !== o.product.id) return o;
