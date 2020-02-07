@@ -1,6 +1,6 @@
 import React from 'react';
 
-const TableContext = React.createContext();
+export const TableContext = React.createContext();
 
 const PRVI_SPRAT  = "prvi";
 const DRUGI_SPRAT = "drugi"
@@ -54,6 +54,20 @@ export class TableProvider extends React.Component {
                     x : 0,
                     y : 0
                 }       
+            },
+            addProductToActiveTab : (p, table) => {
+
+                table.orders.push({
+                    checked: true,
+                    product : { id : p.id, name : p.name, price : p.price},
+                    quantity : 1,
+                    myTab : table.activeTab
+                })
+                this.setState({currentFloorName : PRVI_SPRAT}, () => {console.log(this.state.floors)})
+            }
+            ,
+            setTableActiveTab : (table, activeTab) => {
+                table.activeTab = activeTab;
             }
         }
     }
@@ -87,19 +101,19 @@ export class TableProvider extends React.Component {
             tables.push({ 
             orders : [{
                 checked: true,
-                product : { id : 1, name : 'Pivo', price : 120},
+                product : { id : 1111, name : 'Pivo', price : 120},
                 quantity : 30,
                 myTab : "1"
             },
             {
                 checked: true,
-                product : { id : 2, name : 'Sok', price : 120},
+                product : { id : 2222, name : 'Sok', price : 120},
                 quantity : 15,
                 myTab : "1"
             },
             {
                 checked: true,
-                product : { id : 3, name : 'whatever', price : 100},
+                product : { id : 3333, name : 'whatever', price : 100},
                 quantity : 17,
                 myTab : "2"
             }

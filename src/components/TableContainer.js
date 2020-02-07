@@ -12,23 +12,12 @@ export default class TableContainer extends Component {
       super(props); 
 
       this.state = {
-        tables:[],
         showTables : true,
         table : null
       };
 
     }
 
-
-
-    // deleteTable = () => {
-    //   const {selectedTableId} = this.state
-    //   if(selectedTableId < 0) return;
-    //   const {tables} = this.state;
-    //   this.setState({ selectedTableId : -1, tables : tables.filter(table => (table.id !== selectedTableId))});
-    // }
-
-    
 
     setActiveTable = (table) => {
         this.setState({ table, showTables : false }, () => console.log(table))
@@ -55,6 +44,7 @@ export default class TableContainer extends Component {
                                   table = {table} 
                                   setActiveTable = {this.setActiveTable}
                                   updateCoordinatesOfSelectedTable = {context.updateCoordinatesOfSelectedTable}
+                                  addProductToActiveTab = {context.addProductToActiveTab}
                                   ></Table2>
                               </div>)
                           })
@@ -65,7 +55,7 @@ export default class TableContainer extends Component {
                           <Container fluid>
                           <Row>
                             <LeftColumn table = {this.state.table} showTableView = {this.showTableView}></LeftColumn>
-                            <RightColumn></RightColumn>
+                            <RightColumn table = {this.state.table}></RightColumn>
                           </Row>
                         </Container>
                         )

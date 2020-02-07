@@ -57,6 +57,7 @@ const addNewTab = () => {
 
 const toggleTab = tab => {
   if (activeTab !== tab) setActiveTab(tab);
+
 };
 
 const increaseQuantity = (id, price) => {
@@ -122,7 +123,7 @@ const checkPlease = () => {
                       <NavItem>
                       <NavLink
                         className={classnames({ active: activeTab === ttRender.tabNumber })}
-                        onClick={() => { toggleTab(ttRender.tabNumber); }}
+                        onClick={() => { toggleTab(ttRender.tabNumber); context.setTableActiveTab(props.table, ttRender.tabNumber); }}
                       >
                         Racun {' '} {ttRender.tabNumber}
                       </NavLink>
