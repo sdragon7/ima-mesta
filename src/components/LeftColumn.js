@@ -123,7 +123,7 @@ const checkPlease = () => {
                       <NavItem>
                       <NavLink
                         className={classnames({ active: activeTab === ttRender.tabNumber })}
-                        onClick={() => { toggleTab(ttRender.tabNumber); context.setTableActiveTab(props.table, ttRender.tabNumber); }}
+                        onClick={() => { toggleTab(ttRender.tabNumber); context.setTableActiveTab(props.table, ttRender.tabNumber + ""); }}
                       >
                         Racun {' '} {ttRender.tabNumber}
                       </NavLink>
@@ -140,7 +140,8 @@ const checkPlease = () => {
             <NavItem>
                
                   <Button  color = "success"onClick={() => {
-                             addNewTab()
+                             addNewTab();
+                             context.setTableActiveTab(props.table,  "" + numberOfTabs);
                   }}> + </Button>
               
               </NavItem>
@@ -151,11 +152,11 @@ const checkPlease = () => {
    
             {
               tabsToRender.map(
-                ttRender => {
+                (ttRender, index) => {
                   console.log(ttRender + 'tabcina')
                   return (
                     <>
-                    <TabPane  tabId= {ttRender.tabNumber } >
+                    <TabPane key={index}  tabId= {ttRender.tabNumber } >
                       <BottomScrollListener debounce = "0" onBottom = {() => {}}>
                         { scrollRef => (
                       <div  ref = {scrollRef} style = {{height :"250px" ,overflowY : "scroll"}}>
@@ -172,9 +173,9 @@ const checkPlease = () => {
                           </thead>
                      
                           <tbody>
-                            {orders.filter(o => (o.myTab === activeTab)).map(order => {
+                            {orders.filter(o => (o.myTab === activeTab)).map((order, index) => {
                               return (
-                                <tr key={order.product.id}>
+                                <tr key={index}>
                                 
                                   <td>{order.product.name}</td>
                                   {/* <td>{order.product.price}</td> */}

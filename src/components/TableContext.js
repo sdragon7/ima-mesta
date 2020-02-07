@@ -10,6 +10,7 @@ export class TableProvider extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            fake : false,
             loggedInUser : {
                 token : "",
                 username : "whatever"
@@ -63,7 +64,8 @@ export class TableProvider extends React.Component {
                     quantity : 1,
                     myTab : table.activeTab
                 })
-                this.setState({currentFloorName : PRVI_SPRAT}, () => {console.log(this.state.floors)})
+                console.log(table.orders)
+                this.setState({fake : true})
             }
             ,
             setTableActiveTab : (table, activeTab) => {
