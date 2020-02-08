@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Table2 from  './Table2';
-import LeftColumn from  './LeftColumn';
+import LeftColumn2 from  './LeftColumn2';
 import RightColumn from  './RightColumn';
 import {  Container, Row } from 'reactstrap';
 import Sidebar from './Sidebar'
@@ -54,7 +54,7 @@ export default class TableContainer extends Component {
                         else return (
                           <Container fluid>
                           <Row>
-                            <LeftColumn table = {this.state.table} showTableView = {this.showTableView}></LeftColumn>
+                            <LeftColumn2 table = {this.state.table} showTableView = {this.showTableView}></LeftColumn2>
                             <RightColumn table = {this.state.table}></RightColumn>
                           </Row>
                         </Container>

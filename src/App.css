@@ -1,4 +1,4 @@
-input[type=checkbox] + label {
+/* input[type=checkbox] + label {
     display: block;
   }
   
@@ -36,5 +36,29 @@ input[type=checkbox] + label {
   input[type=checkbox]:disabled + label:before {
     transform: scale(1);
     border-color: #aaa;
-  }
+  } */
   
+#bill-pills > li > a.active{
+  background-color : steelblue
+}
+
+#addBillBtn:hover {
+  transform: scale(1.2);
+}
+
+#select-btn {
+  padding: 10px ;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #343a40;
+}
+
+#select-btn:active {
+  box-shadow: 0 5px #343a40;
+  transform: translateY(4px);
+}

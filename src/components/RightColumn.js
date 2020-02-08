@@ -127,7 +127,7 @@ export default function RightColumn(props) {
                 <Row>
                 {
                     productCategories.list.map((item, index) => {
-                        return <Col><Button style={{width : '100%'}} color="primary" className="mt-2" onClick={() => { 
+                        return <Col><Button id="select-btn" style={{width : '100%', backgroundColor : 'steelblue'}} className="mt-2 mb-5" onClick={() => { 
                             setProductCategories(
                                 prev => { 
                                     return {...prev, activeProductCategory : item, activeProductCategoryItem : item.items[0] }
@@ -152,7 +152,7 @@ export default function RightColumn(props) {
                                                                 return {...prev, activeProductCategoryItem : productItem }
                                                             }
                                                         )
-                                                    }} className="bg-dark text-white m-1">{ productItem.name }</ListGroupItem>
+                                                    }} id="select-btn" style={{ backgroundColor : 'steelblue' }} className="m-2">{ productItem.name }</ListGroupItem>
                                             }) 
                                 })
                             }

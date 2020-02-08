@@ -57,14 +57,21 @@ export class TableProvider extends React.Component {
                 }       
             },
             addProductToActiveTab : (p, table) => {
-
-                table.orders.push({
-                    checked: true,
-                    product : { id : p.id, name : p.name, price : p.price},
-                    quantity : 1,
-                    myTab : table.activeTab
-                })
-                console.log(table.orders)
+                const res = table.orders.filter(order => (
+                    (order.product.name === p.name) && (order.myTab === table.activeTab)));
+                console.log(res)
+                
+                if(res.length === 0) {
+                    table.orders.push({
+                        checked: true,
+                        product : { id : p.id, name : p.name, price : p.price},
+                        quantity : 1,
+                        myTab : table.activeTab
+                    })
+                } else {
+                    res[0].quantity = res[0].quantity + 1;
+                }
+                
                 this.setState({fake : true})
             }
             ,
@@ -90,9 +97,6 @@ export class TableProvider extends React.Component {
         if(newArray.length === 0) return [];
         else return newArray[0].tables;
     }
-   
-
-
 
     addTable = () => {
         let tables = this.getTablesOnCurrentFloor();
