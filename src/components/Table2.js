@@ -127,7 +127,7 @@ export default class Table extends Component {
                     }
                   }
                   onDoubleClick={() => {
-                    this.props.setActiveTable(this.props.table);
+                    context.setActiveTable(this.props.table);
                   }}
                 >
                   Sto {tableNumber} <br></br> {total} rsd

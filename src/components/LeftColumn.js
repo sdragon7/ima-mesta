@@ -114,7 +114,7 @@ const checkPlease = () => {
           return(
           <Col lg={4} md={4} className="p-0">
           <Card style={style}>
-          <Nav tabs>
+          <Nav pills style={{cursor : 'pointer'}} className="p-2" id="bill-pills">
               {
                 tabsToRender.map(
                   ttRender => {
@@ -137,13 +137,10 @@ const checkPlease = () => {
 
               }
              
-            <NavItem>
-               
-                  <Button  color = "success"onClick={() => {
-                             addNewTab();
-                             context.setTableActiveTab(props.table,  "" + numberOfTabs);
-                  }}> + </Button>
-              
+             <NavItem className="p-2">
+            <i id="addBillBtn" className="fas fa-plus" onClick={() => {
+                    addNewTab();
+                    context.setTableActiveTab(props.table,  "" + numberOfTabs); }}></i>
               </NavItem>
             </Nav>
 

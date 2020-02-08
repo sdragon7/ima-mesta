@@ -15,6 +15,16 @@ export class TableProvider extends React.Component {
                 token : "",
                 username : "whatever"
             },
+            activeTable : null,
+            showTables : true,
+            total : 0,
+            totalSelected : 0,
+            setActiveTable : (table) => {
+                this.setState({ activeTable : table, showTables : false, activeOrders : table.orders })
+            },
+            setShowTableView : () => {
+                this.setState({ showTables : !this.state.showTables })
+            },
             currentFloorName : PRVI_SPRAT,
             floorNames : [
                 PRVI_SPRAT,
@@ -57,26 +67,56 @@ export class TableProvider extends React.Component {
                 }       
             },
             addProductToActiveTab : (p, table) => {
-                const res = table.orders.filter(order => (
-                    (order.product.name === p.name) && (order.myTab === table.activeTab)));
-                console.log(res)
+                const res = this.state.activeTable.orders.filter(order => (
+                    (order.product.name === p.name) && (order.myTab === this.state.activeTable.activeTab)));
                 
                 if(res.length === 0) {
-                    table.orders.push({
+                    this.state.activeTable.orders.push({
                         checked: true,
                         product : { id : p.id, name : p.name, price : p.price},
                         quantity : 1,
-                        myTab : table.activeTab
+                        myTab : this.state.activeTable.activeTab
                     })
                 } else {
                     res[0].quantity = res[0].quantity + 1;
                 }
                 
-                this.setState({fake : true})
+                this.setState({activeTable: this.state.activeTable, total : this.state.total + p.price})
             }
             ,
             setTableActiveTab : (table, activeTab) => {
                 table.activeTab = activeTab;
+            },
+            increaseQuantity : (id, price, order) => {
+
+                // setTotal(total + price);
+                 
+                var orders = [...this.state.activeTable.orders]
+
+                     orders.map(order => {
+                        if(order.product.id === id && this.state.activeTable.activeTab === order.myTab)
+                            order.quantity = order.quantity + 1    
+                    })    
+
+                    this.state.activeTable.orders = orders;
+
+                     this.setState(prev => ({ activeTable : this.state.activeTable, total : this.state.total + price }))
+                
+            },
+            decreaseQuantity : (id, price, order) => {
+                //setTotal(total - price);
+             
+            
+                var orders = [...this.state.activeTable.orders]
+
+                     orders.map(order => {
+                        if(order.product.id === id && this.state.activeTable.activeTab === order.myTab)
+                            order.quantity = order.quantity - 1    
+                    })    
+
+                    this.state.activeTable.orders = orders;
+
+                    this.setState(prev => ({ activeTable : this.state.activeTable, total : this.state.total - price }))
             }
         }
     }

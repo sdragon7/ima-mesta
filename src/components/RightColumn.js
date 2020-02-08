@@ -15,32 +15,6 @@ export default function RightColumn(props) {
         activeProductCategoryItem : {},
         isLoading : true
     })
-    
-    var req = require.context("../assets/images/", true, /\.(png|jpe?g|svg)$/);
-    let img
-    if(productCategories.list[0] !== undefined) {
-        req.keys().map(r => {
-            //console.log(productCategories.activeProductCategoryItem.items[1].name)
-            var fodlers_size = r.match(/\//ig).length - 1;
-            var folder_name = r.substring(2, r.lastIndexOf('/'))
-            console.log(folder_name)
-            //img = require("../assets/images/Napici/kafa/kafa.jpg")
-    
-            //folder = r.substring(2, r.lastIndexOf('/'))
-            //images.push(require("../assets/images/" + folder + r.substring(folder.length + 2)))
-            
-            // if(categories[folder] !== undefined)
-            //     categories[folder].push(require("../assets/images/" + folder + r.substring(folder.length + 2)))
-            // else {
-            //     folders.push(folder)
-            //     categories[folder] = images
-            // }
-    
-            // images = []
-        })
-    
-    }
-  
 
     var rowRender = []
     let products = []
@@ -66,7 +40,7 @@ export default function RightColumn(props) {
                                 return (
                                     <Card style={{boxShadow : '0 10px 6px -4px black'}}>
                                         <CardImg top width="100%" src={"data:image/jpeg;base64," + p.image} alt="Card image cap" /> 
-                                        <Button onClick={ () => context.addProductToActiveTab(p, props.table) } >{ p.name } { p.price }</Button>
+                                        <Button onClick={ () => context.addProductToActiveTab(p, context.activeTable) } >{ p.name } { p.price }</Button>
                                     </Card>
                                 )
                             })

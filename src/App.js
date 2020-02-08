@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-import TableContainer from  './components/TableContainer';
+import TableContainer2 from  './components/TableContainer2';
 import { TableProvider } from './components/TableContext'
 import KeyPad from './components/KeyPad';
 import Idle from 'react-idle';
@@ -34,7 +34,7 @@ function App() {
           </>
           : 
           <TableProvider>
-            <TableContainer></TableContainer>
+            <TableContainer2></TableContainer2>
           </TableProvider>
         } 
 

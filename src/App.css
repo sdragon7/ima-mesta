@@ -39,7 +39,7 @@
   } */
   
 #bill-pills > li > a.active{
-  background-color : steelblue
+  background-color : steelblue;
 }
 
 #addBillBtn:hover {
