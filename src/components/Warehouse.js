@@ -14,6 +14,7 @@ export default function Warehouse(props) {
     const [ activeIncFields, setActiveIncFields] = useState([]);
     const [ activeDecFields, setActiveDecFields] = useState([]);
     const [ changeNotifiers, setChangeNotifiers] = useState([]);
+    const [ checkboxArray, setCheckboxArray ] = useState([]);
 
     
     const style = {
@@ -29,6 +30,16 @@ export default function Warehouse(props) {
     }, [activeIngredientsList])
 
     useEffect(() => {
+        console.log(checkboxArray)
+    }, [checkboxArray])
+
+    useEffect(() => {
+        fetchCategories(true);
+
+    }, [])
+    
+
+    const fetchCategories = (initCall) => {
         fetch("http://localhost:8080/warehouse/categories")
         .then(res => res.json())
         .then(
@@ -36,14 +47,18 @@ export default function Warehouse(props) {
               if(Object.keys(result).length != 0) {
                 setCategories(result);
                 setLoading(false);
-                const ingredients = result[0].ingredients
-                setActiveIngredientsList(ingredients);
-                setServerResponse(result);
-                
-                setFields(ingredients.length);
-          
-
-                console.log(result[0].ingredients)
+               
+                setServerResponse(result);             
+                if(initCall) { 
+                    const ingredients = result[0].ingredients
+                    setActiveIngredientsList(ingredients);
+                    setFields(ingredients.length);            
+                }
+                else {
+                    const ingredients = result.filter(cat => (cat.id === activeTab))[0].ingredients
+                    setActiveIngredientsList(ingredients);
+                }
+                //console.log(result[0].ingredients)
                 
               } 
               else
@@ -55,72 +70,122 @@ export default function Warehouse(props) {
             console.log('An error occured!')
         }
         )
+    }
 
-        // fetch("http://localhost:8080/warehouse/ingredients")
-        // .then(res => res.json())
-        // .then(
-        //   (result) => {
-        //       if(Object.keys(result).length != 0) {
-        //         setActiveIngredientsList(result);
-        //         console.log('list of obj')
-        //         console.log(result);
-        //       } 
-        //       else
-        //       {
-        //       }                              
-        // },
-        // (error) => {
-        //     console.log('An error occured!')
-        // }
-        // )
-    }, [])
+    const updateAllChecked = (pos) => {
+
+        let arr = [];
+        for(var i =0; i < checkboxArray.length; i++)
+            if(checkboxArray[i]) {
+                arr.push({...activeIngredientsList[i], lastQuantityUpdate :  (pos ? Number(activeIncFields[i])  : -Number(activeDecFields[i]) )})
+            }
+   
+
+        fetch("http://localhost:8080/warehouse/ingredients/", {
+            method: 'PUT',
+            body: JSON.stringify(arr),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            createNotifier(arr);
+            fetchCategories(false);
+      
+        }).catch(err => console.log(err));
+        
+        
+        
+    }
 
     const setFields = (len) => {
         let initArray1 = [];
         let initArray2 = [];
-
+        let styleArr= [];
+  
         for(var i = 0; i < len; i++) {
+            styleArr.push(false);
             initArray1.push(0);
             initArray2.push(0);
-
         }
+        setCheckboxArray(styleArr);
         setActiveIncFields(initArray1);
         setActiveDecFields(initArray2);
     }
 
     const handleIncChange = (myIndex, val) => {
-        let myArray = activeIncFields;
+        let myArray = activeIncFields.slice(); // ovo ne menja originalni array
         myArray[myIndex] = val;
         setActiveIncFields(myArray);
     }
     const handleDecChange = (myIndex, val) => {
-        let myArray = activeDecFields;
+        let myArray = activeDecFields.slice();
         myArray[myIndex] = val;
         setActiveDecFields(myArray)
     }
-    
-    const updateIngredient = (i, qty) => { 
-        if(qty == 0) return;  
-        let newArray = activeIngredientsList.map(ai => {
-            if(ai.id !== i.id ) return ai ; else return {...ai, remainingQuantity : ai.remainingQuantity + Number(qty)} 
-        });
-        setActiveIngredientsList(newArray);
 
-        i.remainingQuantity += Number(qty);
-        console.log(JSON.stringify(i))
-        return fetch("http://localhost:8080/warehouse/ingredients/", {
+    const checkboxChange = (myIndex) => {
+        let myArray = checkboxArray.slice();
+        myArray[myIndex] = !myArray[myIndex];
+        setCheckboxArray(myArray)
+    }
+
+    const createNotifier = (itemList) => {
+
+        let arrayOfMsgs = []
+        itemList.map(i => {
+           
+
+            const qty = i.lastQuantityUpdate
+            // if( qty > 0 ) arrayOfMsgs.push({ msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, ingredient : {id : i.id}, quantity : qty})
+            // else arrayOfMsgs.push({msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, ingredient : {id : i.id}, quantity : qty})    
+            if( qty > 0 ) arrayOfMsgs.push({ msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, id : i.id, quantity : qty})
+            else arrayOfMsgs.push({msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, id : i.id, quantity : qty})    
+
+        })
+        console.log('array of msgs')
+        console.log(arrayOfMsgs)
+        setChangeNotifiers([...changeNotifiers, { msgs : arrayOfMsgs,  color : "primary", date : new Date()}]);
+
+        fetch("http://localhost:8080/warehouse/messages/", {
+            method: 'POST',
+            body: JSON.stringify(arrayOfMsgs),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+                console.log('sve ok')
+
+        }).catch(err => console.log(err));
+
+
+  
+    }
+    
+    const updateIngredient = (item, qty) => { 
+        if(qty == 0) return;  
+        // let newArray = activeIngredientsList.map(ai => {
+        //     if(ai.id !== i.id ) return ai ; else return {...ai, remainingQuantity : ai.remainingQuantity + Number(qty)} 
+        // });
+        // setActiveIngredientsList(newArray);
+
+        let i = {...item}
+        i.lastQuantityUpdate = Number(qty);
+        //console.log(JSON.stringify(i))
+        return fetch("http://localhost:8080/warehouse/ingredient/", {
             method: 'PUT',
             body: JSON.stringify(i),
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(res => {
-            if(qty > 0 )
-                setChangeNotifiers([...changeNotifiers, {msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, color : "primary", date : new Date()}]);
-            else    
-                setChangeNotifiers([...changeNotifiers, {msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, color : "danger", date : new Date()}]);
+        })
+        .then(res => res.json())
+        .then(res => {
+            createNotifier(Array.of(i));
+            fetchCategories(false);
 
-            return res;
         }).catch(err => console.log(err));
 
     }
@@ -165,6 +230,7 @@ export default function Warehouse(props) {
                                                         const ingredients = serverResponse.filter(ca => (ca.id === c.id ))[0].ingredients;
                                                         setActiveIngredientsList(ingredients);
                                                         setFields(ingredients.length)
+                                                       
 
                                                 
                                                     }}
@@ -184,7 +250,7 @@ export default function Warehouse(props) {
                         </Nav>
                         <Row>
                                
-                            <Col style={style} lg = "8" md = "8" sm ="8">
+                            <Col style={style} lg = "9" md = "9" sm ="9">
                              
                                 <TabContent activeTab={activeTab}>
                                     {
@@ -201,6 +267,7 @@ export default function Warehouse(props) {
                                                 <TableBsr striped size ="sm" >
                                                 <thead>
                                                     <tr>
+                                                    <th></th>
                                                     <th>Proizvod</th>
                                                     {/* <th>Cena</th> */}
                                                     <th>Jedinica</th>
@@ -220,23 +287,38 @@ export default function Warehouse(props) {
                                                     (activeIngredientsList == undefined ? [] : activeIngredientsList).map((i, index) => {
                                                     const myIndex = activeIngredientsList.indexOf(i);
                                                     return (
-                                                        <tr key={index}>
+                                                        <tr key={index} >
                                                         
-                                                        <td>{i.name}</td>
+                                                        <td>
+                                                            <input  type="checkbox" 
+                                                                id= {i.id} 
+                                                                name={i.id}
+                                                                defaultChecked = {checkboxArray[myIndex]}
+
+                                                                onClick={() =>{
+                                                                    checkboxChange(myIndex);
+                                                                    
+                                                                }
+                                                                }
+                                                            />
+                                                        </td>
+                                                        <td>                          
+                                                            {i.name}
+                                                        </td>
                                                         <td>{i.unit}</td>
                                                         <td>{i.remainingQuantity}</td>
                                                         <td>
-                                                            <Input  defaultValue = {0} size = "sm" onChange = {(e) => {handleIncChange(myIndex, e.target.value)}} ></Input>
+                                                            <Input  defaultValue = {0} size = "sm" onChange = {(e) => { handleIncChange(myIndex, e.target.value)}} ></Input>
                                                         </td>
                                                         <td>
-                                                            <Button  size = "sm" color = "success" onClick = {() => {updateIngredient(i, activeIncFields[myIndex])}}>+</Button>
+                                                            <Button  size = "sm" color = "success" onClick = {() => { updateIngredient(i, activeIncFields[myIndex])}}>+</Button>
 
                                                         </td>
                                                         <td>
-                                                            <Input defaultValue = {0} size = "sm" onChange = {(e) => {handleDecChange(myIndex, e.target.value)}}></Input>
+                                                            <Input defaultValue = {0} size = "sm" onChange = {(e) => { handleDecChange(myIndex, e.target.value)}}></Input>
                                                         </td>
                                                         <td>
-                                                            <Button size = "sm" color = "danger" onClick = {() => {updateIngredient(i, -activeDecFields[myIndex])}}>-</Button>
+                                                            <Button size = "sm" color = "danger" onClick = {() => { updateIngredient(i, -activeDecFields[myIndex])}}>-</Button>
 
                                                         </td>
                                                         </tr>
@@ -264,17 +346,35 @@ export default function Warehouse(props) {
                                         
                                     }     
                                     </TabContent>
+                                    <Button color = "success" onClick = {() => { updateAllChecked(true) }} >Dodaj sve</Button>
+                                    <Button color = "danger" onClick = {() => { updateAllChecked(false) }} >Otpisi sve</Button>
+
 
                             </Col>
-                            <Col style={style} lg = "4" md = "4" sm ="4">
+                            <Col style={style} lg = "3" md = "3" sm ="3">
                                 <ListGroup>
                                     {
+                                        
                                         changeNotifiers.map((cn, index) => {
-                                            const currentDate = new Date();
+                                            const hrs = cn.date.getHours();
+                                            const mins = cn.date.getMinutes();
+                                            const secs = cn.date.getSeconds();
                                             return(
-                                                    <Alert color={cn.color}>
-                                                        <p>{cn.msg}</p>
-                                                        <p>{cn.date.getHours() + ":" +cn.date.getMinutes()}</p> 
+                                                    <Alert color={cn.color} >
+                                                        {
+                                                            cn.msgs.map(o => {
+                                                                return (
+                                                                    <p>
+                                                                        {o.msg}
+                                                                    </p>
+
+                                                                )                                                           
+                                                                
+                                                            }
+                                                                
+                                                                              
+                                                            )}
+                                                        <p>{(hrs > 9 ? hrs : "0" + hrs  ) + ":" + (mins > 9 ? mins : "0"+ mins) + ":" + (secs > 9 ? secs : "0" + secs)}</p> 
                                                     </Alert>
                                                    
 
