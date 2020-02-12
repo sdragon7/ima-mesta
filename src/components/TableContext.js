@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 
 export const TableContext = React.createContext();
 
@@ -17,8 +18,38 @@ export class TableProvider extends React.Component {
             },
             activeTable : null,
             showTables : true,
-            total : 0,
             totalSelected : 0,
+            setTotalSelected : (price) => {
+                this.setState({ totalSelected : price })
+            },
+            setTotal : (price) => {
+                let activeTable = this.state.activeTable
+                activeTable.total = activeTable.total + price
+                this.setState({ activeTable : activeTable })
+            },
+            checkPlease : () => {
+                var orders = [...this.state.activeTable.orders]
+                let totalPrice = 0
+                let newOrders = orders.filter(
+                    (order => (!( order.checked && order.myTab === this.state.activeTable.activeTab ))))
+
+                newOrders.map(order => {  totalPrice += order.product.price * order.quantity })    
+
+                let activeTable = this.state.activeTable
+                activeTable.orders = newOrders
+                if(totalPrice === 0) {
+                    activeTable.tableColor = "success"
+                    activeTable.tabsToRender = [{ tabNumber : "1" }, { tabNumber : "2" }]
+                }
+                activeTable.isDraggable = true
+                activeTable.total = totalPrice
+                activeTable.activeTab = "1"
+                let tabsToRender = [...activeTable.tabsToRender]
+                tabsToRender.map((tab, index) => { activeTable.tabsToRender.push({tabNumber : index + ""}) })
+                activeTable.tabsToRender = tabsToRender
+                this.setState({ activeTable : activeTable, showTables : true})
+
+            },
             setActiveTable : (table) => {
                 this.setState({ activeTable : table, showTables : false, activeOrders : table.orders })
             },
@@ -67,30 +98,45 @@ export class TableProvider extends React.Component {
                 }       
             },
             addProductToActiveTab : (p, table) => {
-                const res = this.state.activeTable.orders.filter(order => (
-                    (order.product.name === p.name) && (order.myTab === this.state.activeTable.activeTab)));
+                let activeTable = this.state.activeTable
+
+                const res = activeTable.orders.filter(order => (
+                    (order.product.name === p.name) && (order.myTab === activeTable.activeTab)));
                 
                 if(res.length === 0) {
-                    this.state.activeTable.orders.push({
+                    activeTable.orders.push({
                         checked: true,
                         product : { id : p.id, name : p.name, price : p.price},
                         quantity : 1,
-                        myTab : this.state.activeTable.activeTab
+                        myTab : activeTable.activeTab
                     })
                 } else {
                     res[0].quantity = res[0].quantity + 1;
                 }
                 
-                this.setState({activeTable: this.state.activeTable, total : this.state.total + p.price})
+                activeTable.total = activeTable.total + p.price
+                
+                this.setState({activeTable: this.state.activeTable, totalSelected: this.state.totalSelected + p.price})
             }
             ,
             setTableActiveTab : (table, activeTab) => {
                 table.activeTab = activeTab;
+                this.setState({ activeTable : table })
+            },
+            setTableOrders : (order) => {
+                var orders = [...this.state.activeTable.orders]
+                
+
+                   let newActiveTable = this.state.activeTable
+                   newActiveTable.orders =  orders.map(o => {
+                    if(order.product.id !== o.product.id) return o;
+                    else return { ...order, checked : !order.checked }
+                   
+                  })
+
+                  this.setState(prev => ({ activeTable : newActiveTable, totalSelected : this.state.totalSelected - order.product.price * order.quantity })) 
             },
             increaseQuantity : (id, price, order) => {
-
-                // setTotal(total + price);
-                 
                 var orders = [...this.state.activeTable.orders]
 
                      orders.map(order => {
@@ -98,25 +144,36 @@ export class TableProvider extends React.Component {
                             order.quantity = order.quantity + 1    
                     })    
 
-                    this.state.activeTable.orders = orders;
+                    let newActiveTable = this.state.activeTable
+                    newActiveTable.orders = orders
+                    newActiveTable.total = newActiveTable.total + price
 
-                     this.setState(prev => ({ activeTable : this.state.activeTable, total : this.state.total + price }))
+                    this.setState(prev => ({ activeTable : newActiveTable }))
                 
             },
             decreaseQuantity : (id, price, order) => {
-                //setTotal(total - price);
-             
-            
                 var orders = [...this.state.activeTable.orders]
 
-                     orders.map(order => {
+                     orders.map((order, index) => {
+                         if(order.quantity === 1) {
+                             orders.splice(index, 1)
+                         }
                         if(order.product.id === id && this.state.activeTable.activeTab === order.myTab)
                             order.quantity = order.quantity - 1    
                     })    
 
-                    this.state.activeTable.orders = orders;
+                    let newActiveTable = this.state.activeTable
+                    newActiveTable.orders = orders
+                    newActiveTable.total = newActiveTable.total - price
 
-                    this.setState(prev => ({ activeTable : this.state.activeTable, total : this.state.total - price }))
+                    this.setState(prev => ({ activeTable : newActiveTable }))
+            },
+            addNewTab : () => {
+                let activeTable = this.state.activeTable
+                let activeTabNumber = (activeTable.tabsToRender.length + 1) + ""
+                activeTable.tabsToRender.push({"tabNumber": "" + activeTabNumber})
+                activeTable.activeTab = activeTabNumber
+                this.setState({ activeTable : activeTable })
             }
         }
     }
@@ -145,24 +202,25 @@ export class TableProvider extends React.Component {
         if(tables.length === 0) {
             tables = []
             tables.push({ 
-            orders : [{
-                checked: true,
-                product : { id : 1111, name : 'Pivo', price : 120},
-                quantity : 30,
-                myTab : "1"
-            },
-            {
-                checked: true,
-                product : { id : 2222, name : 'Sok', price : 120},
-                quantity : 15,
-                myTab : "1"
-            },
-            {
-                checked: true,
-                product : { id : 3333, name : 'whatever', price : 100},
-                quantity : 17,
-                myTab : "2"
-            }
+            orders : [
+            //     {
+            //     checked: true,
+            //     product : { id : 1111, name : 'Pivo', price : 120},
+            //     quantity : 30,
+            //     myTab : "1"
+            // },
+            // {
+            //     checked: true,
+            //     product : { id : 2222, name : 'Sok', price : 120},
+            //     quantity : 15,
+            //     myTab : "1"
+            // },
+            // {
+            //     checked: true,
+            //     product : { id : 3333, name : 'whatever', price : 100},
+            //     quantity : 17,
+            //     myTab : "2"
+            // }
             
             ], 
             total : 0,
