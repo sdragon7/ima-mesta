@@ -140,8 +140,8 @@ export default function Warehouse(props) {
             const qty = i.lastQuantityUpdate
             // if( qty > 0 ) arrayOfMsgs.push({ msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, ingredient : {id : i.id}, quantity : qty})
             // else arrayOfMsgs.push({msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, ingredient : {id : i.id}, quantity : qty})    
-            if( qty > 0 ) arrayOfMsgs.push({ msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, id : i.id, quantity : qty})
-            else arrayOfMsgs.push({msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, id : i.id, quantity : qty})    
+            if( qty > 0 ) arrayOfMsgs.push({ msg : `Kolicina proizvoda \"${i.name}"\ je uvecana  za ${qty} ${i.unit}`, id : i.id, quantity : qty, type : 'NABAVKA'})
+            else arrayOfMsgs.push({msg : `Kolicina proizvoda \"${i.name}"\ je umanjena  za ${Math.abs(qty)} ${i.unit}`, id : i.id, quantity : qty, type : 'OTPIS'})    
 
         })
         console.log('array of msgs')
