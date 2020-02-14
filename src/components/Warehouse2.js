@@ -4,6 +4,8 @@ import BottomScrollListener from 'react-bottom-scroll-listener'
 import classnames from "classnames";
 import { getAllByPlaceholderText } from '@testing-library/react';
 import validator from 'validator';
+import DataTable, { createTheme } from 'react-data-table-component';
+
 
 
 
@@ -19,6 +21,38 @@ export default function Warehouse(props) {
     const [ changeNotifiers, setChangeNotifiers] = useState([]);
     const [ checkboxArray, setCheckboxArray ] = useState([]);
 
+    
+    const columns = 
+    [
+       
+        {
+            name: 'Proizvod',
+            selector: 'name',
+            sortable: true,
+        },
+        {
+            name: 'Jedinica',
+            selector: 'unit',
+            sortable: true
+        },
+        {
+            name: 'Kolicina',
+            selector: 'remainingQuantity',
+            sortable: true
+        },
+        {
+            name: 'Dodaj',
+            selector: 'remainingQuantity',
+            sortable: true,
+            cell: row => { 
+                const myIndex = activeIngredientsList.indexOf(row);
+                return (<Input key = {myIndex} value = {activeIncFields[myIndex] || ''} size = "sm" onChange = {(e) => { handleIncChange(myIndex, e.target.value)}} ></Input>
+                )
+            }   
+
+        },
+      
+    ]
     
     const style = {
         height : 'calc(100vh - 100px)',
@@ -253,7 +287,6 @@ export default function Warehouse(props) {
 
                         }
                         </Nav>
-                        <Row>
                                
                             <Col style={style} lg = "9" md = "9" sm ="9">
                              
@@ -268,6 +301,19 @@ export default function Warehouse(props) {
                                                 { scrollRef => (
                                             <div  ref = {scrollRef} style = {{height :"500px" ,overflowY : "scroll"}}>
                                             
+
+                                            <DataTable
+                                            title={category.name}
+                                            columns={
+                                                columns
+                                            }
+                                            data={activeIngredientsList}
+                                            striped
+                                            pagination
+                                            paginationPerPage={5}
+                                            selectableRows
+                                            paginationRowsPerPageOptions={[5, 10, 20, 30]}
+                                        />
 
                                                 <TableBsr striped size ="sm" >
                                                 <thead>
@@ -290,7 +336,7 @@ export default function Warehouse(props) {
                                                 <tbody>
                                                     {
                                                     (activeIngredientsList == undefined ? [] : activeIngredientsList).map((i, index) => {
-                                                    const myIndex = activeIngredientsList.indexOf(i);
+                                                    const myIndex = index
                                                     return (
                                                         <tr key={index} >
                                                         
@@ -392,7 +438,6 @@ export default function Warehouse(props) {
                                 </ListGroup>
 
                             </Col>
-                        </Row>
                     </>
             
             }    
