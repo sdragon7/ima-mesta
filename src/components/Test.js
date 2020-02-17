@@ -1,11 +1,19 @@
-import React, { useState, useEffect, useRef, createRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useContext, useCallback, useMemo } from 'react';
 import { TabContent, TabPane, Nav, NavItem, NavLink, Table, Row, Col, Container, Button, Input} from 'reactstrap';
 import classnames from 'classnames';
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import DataTable, { createTheme } from 'react-data-table-component';
+import { useToasts } from 'react-toast-notifications'
+import { TableContext } from "./TableContext.js"
 
 export default function Test(props) {
+    const context = useContext(TableContext);
+    const leftRef = useRef([])
+
+    const rightRef = useRef([])
+
+    var selectedRowsArr = []
 
     const [categories, setCategories] = useState({
         list : [],
@@ -24,37 +32,66 @@ export default function Test(props) {
     const [startDate, setStartDate] = useState(new Date("01/01/2019"));
     const [endDate, setEndDate] = useState(new Date());
 
-    const StartDateCustomInput = ({ value, onClick }) => (
-        <>
-        <img 
-            onClick={onClick} 
-            alt=""
-            src={require("../assets/images/calendar.png")}
-            style={{width : '70px', height : "70px"}}
-            />
-            <br />
-          {value}
-        </>
-      );
-
-      const EndDateCustomInput = ({ value, onClick }) => (
-        <>
-        <img 
-            onClick={onClick}
-            alt=""
-            src={require("../assets/images/calendar.png")}
-            style={{width : '70px', height : "70px"}}
-            />
-            <br />
-          {value}
-        </>
-      );
-
     const toggle = tab => {
         if(activeTab !== tab) { setActiveTab(tab); setEndDate(new Date())}
       }
 
       useEffect(() => {
+        fetchCategories()
+    }, [])
+
+    const createUpdateMsg = (itemList) => {
+        let arrayOfMsgs = []
+        itemList.map(i => {
+            const qty = i.lastQuantityUpdate
+            if( qty > 0 )
+                arrayOfMsgs.push({ id : i.id, quantity : qty, type : 'NABAVKA'})
+            else 
+                arrayOfMsgs.push({ id : i.id, quantity : qty, type : 'OTPIS'})    
+
+        })
+        console.log('array of msgs')
+        console.log(arrayOfMsgs)
+        //setChangeNotifiers([...changeNotifiers, { msgs : arrayOfMsgs,  color : "primary", date : new Date()}]);
+
+        fetch("http://localhost:8080/warehouse/messages/", {
+            method: 'POST',
+            body: JSON.stringify(arrayOfMsgs),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+                console.log('sve ok')
+
+        }).catch(err => console.log(err));
+
+
+  
+    }
+    const { addToast } = useToasts()
+
+    let ee= 0
+    const CustomTableInput = (props) => (
+        <>
+      <form onSubmit={(e) => {
+          e.preventDefault();
+          console.log(props.row)
+          updateIngredient(props.row, props.positive ? e.target.name.value : -e.target.name.value);
+        }}>
+        <label>
+            <input defaultValue={props.row.lastQuantityUpdate} onChange={(e) => ee = e.target.value} type="text" name="name" 
+                ref={ee => {
+                    props.isLeft ? leftRef.current[(props.row.id - 1)] = ee : rightRef.current[(props.row.id - 1)] = ee
+                }} />
+        </label>
+        <input type="submit" value={props.positive ? '+' : '-'} />
+      </form>
+        </>
+    );
+
+    const fetchCategories = () => {
+
         fetch("http://localhost:8080/warehouse/categories")
         .then(res => res.json())
         .then(
@@ -70,6 +107,8 @@ export default function Test(props) {
 
                 setActiveIngredientsList(result[0].ingredients)
                 setIngrNum(result[0].ingredients.length)
+                leftRef.current = leftRef.current.slice(0, result[0].ingredients.length);
+                rightRef.current = rightRef.current.slice(0, result[0].ingredients.length);
               } else 
               setCategories(prev => {
                   return {
@@ -83,67 +122,95 @@ export default function Test(props) {
 
           }
         )
-    }, [])
+    }
 
-    useEffect(() => {
-        fetch("http://localhost:8080/warehouse/statistics/list", {
-            method : "POST",
+    const updateIngredient = (item, qty) => { 
+        if(qty == 0) return;  
+        // let newArray = activeIngredientsList.map(ai => {
+        //     if(ai.id !== i.id ) return ai ; else return {...ai, remainingQuantity : ai.remainingQuantity + Number(qty)} 
+        // });
+        // setActiveIngredientsList(newArray);
+
+        let i = {...item}
+        i.lastQuantityUpdate = Number(qty);
+        //console.log(JSON.stringify(i))
+        return fetch("http://localhost:8080/warehouse/ingredient/", {
+            method: 'PUT',
+            body: JSON.stringify(i),
             headers: {
                 'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ingredientCategoryId : activeTab, startDate : startDate, endDate : endDate })
+            }
         })
         .then(res => res.json())
-        .then(
-          (result) => {
-              if(Object.keys(result).length != 0) {
-                  console.log(result)
-                setStatistics(prev => {
-                    return {
-                        ...prev,
-                        list : result,
-                        isLoading : false 
-                    }
-                })
-              } else 
-              setStatistics(prev => {
-                  return {
-                      ...prev,
-                      list : result,
-                      isLoading : true
-                  }
-            })
-          },
-          (error) => {
-                alert("errorcina")
-          }
-        )
-    }, [activeTab, startDate, endDate])
-
-    const elRef = useRef([...Array(ingrNum)].map(() => createRef()));
-console.log(elRef)
-    let handleSubmit = (e) => {
-        e.preventDefault();
-        const nextHeights = elRef.current.map(
-            ref => {
-
-                if(ref != null && ref.current != null)
-                alert(ref.current.value)
-            }
-          );
+        .then(res => {
+            fetchCategories()
+            createUpdateMsg(Array.of(i))
+        }).catch(err => console.log(err));
 
     }
-    const CustomTableInput = (props) => (
-        <>
-      <form onSubmit={handleSubmit}>
-        <label>
-          <input type="text" ref={elRef.current[props.row.id]} />
-        </label>
-        <input type="submit" value={props.row.id} />
-      </form>
-        </>
-    );
 
+    const updateAllChecked = (sRows) => {
+        // rightRef.current.map((ref, index) => {
+        //     sRows[index].lastQuantityUpdate = ref.value
+        // })
+ 
+        console.log(selectedRowsArr)
+        
+        // fetch("http://localhost:8080/warehouse/ingredients/", {
+        //     method: 'PUT',
+        //     body: JSON.stringify(sRows),
+        //     headers: {
+        //         'Content-Type': 'application/json'
+        //     }
+        // })
+        // .then(res => res.json())
+        // .then(res => {
+        //     createUpdateMsg(sRows);
+        //     fetchCategories();
+      
+        // }).catch(err => console.log(err));
+    }
+
+    const [selectedRows, setSelectedRows] = useState([])
+    
+    const handleCheckboxes = () => {
+        
+    }
+
+      const columns = useMemo(() =>
+        [
+            {
+                name: 'Proizvod',
+                selector: 'name',
+                sortable: true,
+            },
+            {
+                name: 'Jedinica',
+                selector: 'unit',
+                sortable: false
+            },
+            {
+                name: 'Kolicina',
+                selector: 'remainingQuantity',
+                sortable: true
+            },
+            {
+                name: 'Dodaj',
+                selector: 'remainingQuantity',
+                sortable: false,
+                cell : row => <CustomTableInput row={row} positive={true}/>
+
+            },
+            {
+                name: 'Otpis',
+                selector: 'remainingQuantity',
+                sortable: false,
+                cell : row => <CustomTableInput  row={row} positive={false}/>
+
+            }
+      ]
+    )
+  
     return(
         <>
         <Container fluid className="d-flex justify-content-center mb-5" style={{boxShadow: '0 10px 10px -10px gray'}}>
@@ -171,9 +238,9 @@ console.log(elRef)
             </div>
         </Row>
         </Container>
-        <Container>
+        <Container fluid>
             <Row>
-                <Col style={{ backgroundColor : 'transparent'}}>
+                <Col lg={9} style={{ backgroundColor : 'transparent'}}>
                     <TabContent activeTab={activeTab}>
                         {
                             categories.list.map((category, index) => {
@@ -181,57 +248,24 @@ console.log(elRef)
                                     <TabPane key={index} tabId={ category.id }>
                                     <Row>
                                     <Col sm="12">
-                                        <Row className="text-center" style={{cursor : 'pointer'}}>
-                                            <Col lg="6">
-                                                <DatePicker 
-                                                    selected={startDate} 
-                                                    onChange={date => setStartDate(date)}
-                                                    customInput={<StartDateCustomInput />} 
-                                                />
-                                            </Col>
-                                            <Col lg="6">
-                                                <DatePicker 
-                                                    selected={endDate} 
-                                                    onChange={date => setEndDate(date)}
-                                                    customInput={<EndDateCustomInput />} 
-                                                />
-                                            </Col>
-                                        </Row>
                                         <DataTable
                                             title={category.name}
-                                            columns={
-                                                [
-                                                   
-                                                    {
-                                                        name: 'Proizvod',
-                                                        selector: 'name',
-                                                        sortable: true,
-                                                    },
-                                                    {
-                                                        name: 'Jedinica',
-                                                        selector: 'unit',
-                                                        sortable: true
-                                                    },
-                                                    {
-                                                        name: 'Kolicina',
-                                                        selector: 'remainingQuantity',
-                                                        sortable: true
-                                                    },
-                                                    {
-                                                        name: 'Dodaj',
-                                                        selector: 'remainingQuantity',
-                                                        sortable: true,
-                                                        cell : row => <CustomTableInput index={index} row={row} />
-
-                                                    },
-                                                  
-                                                ]
-                                            }
+                                            columns={columns}
                                             data={activeIngredientsList}
                                             striped
                                             pagination
                                             paginationPerPage={5}
                                             paginationRowsPerPageOptions={[5, 10, 20, 30]}
+                                            selectableRows
+                                            onSelectedRowsChange={row => selectedRowsArr = row.selectedRows}
+                                            subHeader={true}
+                                            subHeaderComponent={
+                                                (
+                                                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                    <Button color="primary" onClick={() => updateAllChecked(selectedRows)}>+</Button>
+                                                  </div>
+                                                )
+                                              }
                                         />
                                     </Col>
                                     </Row>
@@ -241,6 +275,7 @@ console.log(elRef)
                         }
                     </TabContent>
                 </Col>
+                <Col lg={3}></Col>
             </Row>
         </Container>
     </>
