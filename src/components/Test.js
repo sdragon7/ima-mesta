@@ -4,7 +4,6 @@ import classnames from 'classnames';
 import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import DataTable, { createTheme } from 'react-data-table-component';
-import { useToasts } from 'react-toast-notifications'
 import { TableContext } from "./TableContext.js"
 
 export default function Test(props) {
@@ -69,7 +68,6 @@ export default function Test(props) {
 
   
     }
-    const { addToast } = useToasts()
 
     let ee= 0
     const CustomTableInput = (props) => (
@@ -80,9 +78,9 @@ export default function Test(props) {
           updateIngredient(props.row, props.positive ? e.target.name.value : -e.target.name.value);
         }}>
         <label>
-            <input defaultValue={props.row.lastQuantityUpdate} onChange={(e) => ee = e.target.value} type="text" name="name" 
+            <input defaultValue={ props.positive ?  props.row.lastQuantityIncrease : props.row.lastQuantityDecrease } onChange={(e) => ee = e.target.value} type="text" name="name" 
                 ref={ee => {
-                    props.isLeft ? leftRef.current[(props.row.id - 1)] = ee : rightRef.current[(props.row.id - 1)] = ee
+                    props.positive ? leftRef.current[(props.row.id - 1)] = ee : rightRef.current[(props.row.id - 1)] = ee
                 }} />
         </label>
         <input type="submit" value={props.positive ? '+' : '-'} />
@@ -96,6 +94,7 @@ export default function Test(props) {
         .then(res => res.json())
         .then(
           (result) => {
+              console.log(result)
               if(Object.keys(result).length != 0) {
                 setCategories(prev => {
                     return {
@@ -150,25 +149,25 @@ export default function Test(props) {
     }
 
     const updateAllChecked = (sRows) => {
-        // rightRef.current.map((ref, index) => {
-        //     sRows[index].lastQuantityUpdate = ref.value
-        // })
+        leftRef.current.map((ref, index) => {
+            sRows[index].lastQuantityUpdate = ref.value
+        })
  
         console.log(selectedRowsArr)
         
-        // fetch("http://localhost:8080/warehouse/ingredients/", {
-        //     method: 'PUT',
-        //     body: JSON.stringify(sRows),
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     }
-        // })
-        // .then(res => res.json())
-        // .then(res => {
-        //     createUpdateMsg(sRows);
-        //     fetchCategories();
+        fetch("http://localhost:8080/warehouse/ingredients/", {
+            method: 'PUT',
+            body: JSON.stringify(sRows),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(res => {
+            createUpdateMsg(sRows);
+            fetchCategories();
       
-        // }).catch(err => console.log(err));
+        }).catch(err => console.log(err));
     }
 
     const [selectedRows, setSelectedRows] = useState([])
@@ -198,14 +197,14 @@ export default function Test(props) {
                 name: 'Dodaj',
                 selector: 'remainingQuantity',
                 sortable: false,
-                cell : row => <CustomTableInput row={row} positive={true}/>
+                cell : row => <CustomTableInput row={row} positive={true} />
 
             },
             {
                 name: 'Otpis',
                 selector: 'remainingQuantity',
                 sortable: false,
-                cell : row => <CustomTableInput  row={row} positive={false}/>
+                cell : row => <CustomTableInput  row={row} positive={false}  />
 
             }
       ]
