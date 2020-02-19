@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Input, Row, Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, ListGroup, ListGroupItem, Table as TableBsr } from 'reactstrap'
+import { Alert, Input, Row, Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, ListGroup, InputGroup, InputGroupAddon, Table as TableBsr } from 'reactstrap'
 import BottomScrollListener from 'react-bottom-scroll-listener'
 import classnames from "classnames";
 import { getAllByPlaceholderText } from '@testing-library/react';
 import validator from 'validator';
-
-
 
 export default function Warehouse(props) {
 
@@ -266,28 +264,22 @@ export default function Warehouse(props) {
                                             <TabPane key={index}  tabId = { category.id } >
                                             <BottomScrollListener debounce = "0" onBottom = {() => {}}>
                                                 { scrollRef => (
-                                            <div  ref = {scrollRef} style = {{height :"500px" ,overflowY : "scroll"}}>
+                                            <div  ref = {scrollRef} style = {{height :"500px" ,overflowY : "auto"}}>
                                             
 
-                                                <TableBsr striped size ="sm" >
+                                                <TableBsr striped size ="sm">
                                                 <thead>
                                                     <tr>
                                                     <th></th>
                                                     <th>Proizvod</th>
-                                                    {/* <th>Cena</th> */}
                                                     <th>Jedinica</th>
-
                                                     <th>Kolicina</th>
-
                                                     <th >Dodaj</th>
-                                                    <th></th>
                                                     <th>Otpis</th>
-                                                    <th></th>
-
                                                     </tr>
                                                 </thead>
                                             
-                                                <tbody>
+                                                <tbody className="mt-1">
                                                     {
                                                     (activeIngredientsList == undefined ? [] : activeIngredientsList).map((i, index) => {
                                                     const myIndex = activeIngredientsList.indexOf(i);
@@ -313,18 +305,29 @@ export default function Warehouse(props) {
                                                         <td>{i.unit}</td>
                                                         <td>{i.remainingQuantity}</td>
                                                         <td>
-                                                            <Input  value = {activeIncFields[myIndex] || ''} size = "sm" onChange = {(e) => { handleIncChange(myIndex, e.target.value)}} ></Input>
+                                                            <div class="col-md-5">
+                                                                              
+                                                            
+                                                            <InputGroup size="sm">
+                                                                <InputGroupAddon addonType="prepend" onClick = {() => { updateIngredient(i, activeIncFields[myIndex])}}>
+                                                                    <Button color="success"> + </Button> 
+                                                                </InputGroupAddon>
+                                                                <Input value = {activeIncFields[myIndex] || ''} size = "sm" onChange = {(e) => { handleIncChange(myIndex, e.target.value)}} />
+                                                            </InputGroup>
+                                                            </div>
                                                         </td>
                                                         <td>
-                                                            <Button  size = "sm" color = "success" onClick = {() => { updateIngredient(i, activeIncFields[myIndex])}}>+</Button>
-
-                                                        </td>
-                                                        <td>
-                                                            <Input  value = {activeDecFields[myIndex] || ''} size = "sm" onChange = {(e) => { handleDecChange(myIndex, e.target.value)}}></Input>
-                                                        </td>
-                                                        <td>
-                                                            <Button size = "sm" color = "danger" onClick = {() => { updateIngredient(i, -activeDecFields[myIndex])}}>-</Button>
-
+                                                           
+                                                            <div class="col-md-5">
+                                                                              
+                                                            
+                                                            <InputGroup size="sm">
+                                                                <InputGroupAddon addonType="prepend" onClick = {() => { updateIngredient(i, -activeDecFields[myIndex])}}>
+                                                                    <Button color="danger"> - </Button>       
+                                                                </InputGroupAddon>
+                                                                <Input  value = {activeDecFields[myIndex] || ''} size = "sm" onChange = {(e) => { handleDecChange(myIndex, e.target.value)}}></Input>
+                                                        </InputGroup>
+                                                            </div>
                                                         </td>
                                                         </tr>
                                                     );
