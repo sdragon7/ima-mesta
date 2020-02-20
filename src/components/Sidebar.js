@@ -1,6 +1,7 @@
 
 import React, { useState, useContext } from 'react';
 import {  TableConsumer } from './TableContext.js'
+import { TableContext } from "./TableContext.js"
 import {
     Collapse,
     Navbar,
@@ -18,9 +19,11 @@ import {
   
 export default function Sidebar(props) {
     
-        const [isOpen, setIsOpen] = useState(false);
-      
-        const toggle = () => setIsOpen(!isOpen);
+    const [isOpen, setIsOpen] = useState(false);
+  
+    const toggle = () => setIsOpen(!isOpen);
+
+    //const context2 = useContext(TableContext);
       
     return(        
       <TableConsumer>
@@ -34,7 +37,7 @@ export default function Sidebar(props) {
                       <Nav className="mr-auto" navbar>
                         <>
                           {
-                            props.showTables 
+                            context.showTables 
                               ?
                               <>
                               <NavItem style={{cursor : 'pointer'}}>
@@ -44,17 +47,20 @@ export default function Sidebar(props) {
                                 <NavLink onClick= {context.deleteTable}>Obrisi</NavLink>
                               </NavItem>
                               <NavItem style= {{cursor : "pointer"}}>
-                                <NavLink onClick = {() => props.setActiveTable(context.temporaryTable)}>
+                                <NavLink onClick = {() => context.setActiveTable(context.temporaryTable)}>
                                   Za poneti
                                 </NavLink>
                               </NavItem>
+                              <NavItem className="pr-5">
+                              
+                              </NavItem>
                               {
-                                context.floorNames.map(
-                                  fName => {
+                                context.floors.map(
+                                  (floor, index) => {
                                     return (
-                                      <NavItem style= {{cursor : "pointer"}}>
-                                      <NavLink onClick = {() => context.setCurrentFloorName(fName)}>
-                                        {fName}
+                                      <NavItem key={index} style= {{cursor : "pointer"}}>
+                                      <NavLink onClick = {() => context.setCurrentFloorName(floor.floorName)}>
+                                        {floor.floorName}
                                       </NavLink>
                                       </NavItem>
                                     )

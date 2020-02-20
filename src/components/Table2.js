@@ -13,8 +13,6 @@ const style = {
   borderRadius: "100px"
 };
 
-
-
 export default class Table extends Component {
   constructor(props) {
     super(props);
@@ -26,15 +24,8 @@ export default class Table extends Component {
     }
   }
 
-  componentDidMount() {
-    console.log(' I mounted! ' + this.props.table.tableNumber)
-  }
-
-
-
   scrollToBottom = () => {
     this.myRef.scrollIntoView({behaviour : "smooth", block:"end" , inline :"nearest"})
-
   }
 
   addNewTab = () => {
@@ -42,36 +33,12 @@ export default class Table extends Component {
       this.setState(
         {tabsToRender : [...tabsToRender, {"tabNumber": this.state.numberOfTabs}] , activeTab : numberOfTabs, numberOfTabs : numberOfTabs + 1}
       )
-
   }
 
   onControlledDrag = (e, position) => {
     const {x, y} = position;
     this.setState({controlledPosition: {x, y}});
   };
-
-
-  // addToOrder = (prod, quan) => {
-  //   const { total, orders, activeTab } = this.state;
-  //   let filtered = orders.filter(o => (o.product.id == prod.id && activeTab ==o.myTab ));
-  //   if(filtered.length > 0) {
-  //     this.setState({
-  //       total: total + prod.price,
-  //       orders: orders.map(order =>
-  //         order.product.id === prod.id && activeTab ==order.myTab
-  //           ? Object.assign({}, order, { quantity: order.quantity + 1 })
-  //           : order
-  //       )
-  //     });
-  //     return
-  //   }
-  //   this.setState({
-  //     tableColor: "danger",
-  //     total: total + prod.price * quan,
-  //     orders: [...orders, { product: prod, quantity: quan, myTab : activeTab }]
-  //   });
-  //   //this.scrollToBottom();
-  // };
 
   toggle = () => {
     const { modal, isDraggable } = this.state;
@@ -94,9 +61,12 @@ export default class Table extends Component {
       controlledPosition
     } = this.state;
 
-
     return (
-      <Draggable  position={controlledPosition} onStart = {() => isDraggable}  onDrag={this.onControlledDrag} onStop= {() => {this.props.updateCoordinatesOfSelectedTable(controlledPosition, tableNumber);
+      <Draggable 
+        position={controlledPosition} 
+        onStart = {() => isDraggable} 
+        onDrag={this.onControlledDrag} 
+        onStop= {() => {this.props.updateCoordinatesOfSelectedTable(controlledPosition, tableNumber);
     }}>
         <Resizable
           style={style}
@@ -107,9 +77,7 @@ export default class Table extends Component {
         >
           <TableConsumer>
             {
-
               context => {
-              
                 return(
                   <Button
                   color={tableColor}
@@ -131,19 +99,11 @@ export default class Table extends Component {
                   }}
                 >
                   Sto {tableNumber} <br></br> {total} rsd
-    
                 </Button>
-
-
                 )
-
               }
-           
            }
-
-        
           </TableConsumer>
-         
         </Resizable>
       </Draggable>
     );

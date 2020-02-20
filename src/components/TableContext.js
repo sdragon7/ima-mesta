@@ -1,17 +1,13 @@
 import React from 'react';
-import { act } from 'react-dom/test-utils';
+import SERVER from '../server-host'
 
 export const TableContext = React.createContext();
-
-const PRVI_SPRAT  = "prvi";
-const DRUGI_SPRAT = "drugi"
 
 export class TableProvider extends React.Component {
     
     constructor(props) {
         super(props)
         this.state = {
-            fake : false,
             loggedInUser : {
                 token : "",
                 username : "whatever"
@@ -33,7 +29,14 @@ export class TableProvider extends React.Component {
                 let newOrders = orders.filter(
                     (order => (!( order.checked && order.myTab === this.state.activeTable.activeTab ))))
 
-                newOrders.map(order => {  totalPrice += order.product.price * order.quantity })    
+                newOrders.map(order => {  totalPrice += order.product.price * order.quantity })
+
+                //fetch...
+                let paidOrders = orders.filter(
+                    (order => (( order.checked && order.myTab === this.state.activeTable.activeTab ))))
+
+
+                    
 
                 let activeTable = this.state.activeTable
                 activeTable.orders = newOrders
@@ -48,6 +51,7 @@ export class TableProvider extends React.Component {
                 tabsToRender.map((tab, index) => { activeTable.tabsToRender.push({tabNumber : index + ""}) })
                 activeTable.tabsToRender = tabsToRender
                 this.setState({ activeTable : activeTable, showTables : true})
+                
 
             },
             setActiveTable : (table) => {
@@ -56,22 +60,8 @@ export class TableProvider extends React.Component {
             setShowTableView : () => {
                 this.setState({ showTables : !this.state.showTables })
             },
-            currentFloorName : PRVI_SPRAT,
-            floorNames : [
-                PRVI_SPRAT,
-                DRUGI_SPRAT
-            ],
-            floors : [
-                {
-                    tables : [],
-                    floorName : PRVI_SPRAT
-                },
-                {
-                    tables : [],
-                    floorName : DRUGI_SPRAT
-                }
-            
-            ],
+            currentFloorName : "Prizemlje",
+            floors : [],
             addTable: this.addTable,
             deleteTable : this.deleteTable,
             updateTable : this.updateTable,
@@ -178,6 +168,21 @@ export class TableProvider extends React.Component {
         }
     }
 
+    componentDidMount() {
+        fetch(SERVER + "/floor/list")
+        .then(res => res.json())
+        .then(
+          (result) => {
+              console.log(result)
+              this.setState({ floors : result })
+               
+          },
+          (error) => {
+            alert()
+          }
+        )
+    }
+
 
     setCurrentFloorName = (val) => {
         this.setState(
@@ -263,11 +268,7 @@ export class TableProvider extends React.Component {
                 return {...floor, tables : tables};
             }
         })
-        this.setState({
-            floors : newFloorArray
-        } ,
-            () => {console.log(this.state)}       
-        )
+        this.setState({ floors : newFloorArray })
       }
 
     deleteTable = () => {
@@ -309,16 +310,10 @@ export class TableProvider extends React.Component {
                 floors : newFloorArray
             }
         )
-
     }
 
     updateCoordinatesOfSelectedTable = (controlledPosition, tableNumber) => {
-        
         const {floors, currentFloorName} = this.state;
-        console.log(currentFloorName)
-
-        const {selectedTableNumber } = this.state;
-
         const tables  = this.getTablesOnCurrentFloor().map(
             t => (t.tableNumber !== tableNumber) ?
                 t
@@ -326,24 +321,13 @@ export class TableProvider extends React.Component {
                {...t, controlledPosition : controlledPosition}
         );
 
-
-
         const  newFloorArray = floors.map( floor => {
             if(floor.floorName !== currentFloorName) return floor;
             else {
                 return {...floor, tables : tables};
             }
         })
-        this.setState({
-            floors : newFloorArray
-        } ,
-            () => {console.log(this.state)}       
-        )
-
-     
-
-   
-
+        this.setState({ floors : newFloorArray })
     }
 
     render() {

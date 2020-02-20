@@ -24,3 +24,27 @@ code {
 .process-step{display:table-cell;text-align:center;position:relative}
 .process-step p{margin-top:4px}
 .btn-circle{width:150px;text-align:center;border-radius:50%}
+
+.table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th {
+  background-color: #FAFAFA;
+  
+}
+
+.table thead > tr > th {
+  border-width: 0;
+  font-weight: 500;
+  line-height: 50px;
+  font-size: 13px;
+}
+
+.table > tbody > tr > td {
+  vertical-align: middle;
+  font-weight: normal;
+  line-height: 40px;
+  border-bottom: 1px solid #CADADA;
+  font-size: 13px;
+}
+
+.table > tbody > tr > td >input {
+ 
+}

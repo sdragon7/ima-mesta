@@ -1,7 +1,7 @@
 import React, {  useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Nav, NavItem, NavLink, TabContent, TabPane, Button, Table as TableBsr } from 'reactstrap'
 import {FaBackspace} from 'react-icons/fa';
-
+import SERVER from '../server-host'
 
 export default function KeyPad(props) {
 
@@ -117,7 +117,7 @@ export default function KeyPad(props) {
                                                         const input = {
                                                             password : (pincode + "" + char)
                                                         };
-                                                        fetch("http://localhost:8080/login", {
+                                                        fetch(SERVER + "/login", {
                                                             method: 'POST',
                                                             headers: {
                                                                 'Content-Type': 'application/json'

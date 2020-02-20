@@ -5,8 +5,9 @@ import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import DataTable, { createTheme } from 'react-data-table-component';
 import { TableContext } from "./TableContext.js"
+import SERVER from '../server-host'
 
-export default function Test(props) {
+function Test(props) {
     const context = useContext(TableContext);
     const leftRef = useRef([])
 
@@ -53,7 +54,7 @@ export default function Test(props) {
         console.log(arrayOfMsgs)
         //setChangeNotifiers([...changeNotifiers, { msgs : arrayOfMsgs,  color : "primary", date : new Date()}]);
 
-        fetch("http://localhost:8080/warehouse/messages/", {
+        fetch(SERVER + "/warehouse/messages/", {
             method: 'POST',
             body: JSON.stringify(arrayOfMsgs),
             headers: {
@@ -69,7 +70,6 @@ export default function Test(props) {
   
     }
 
-    let ee= 0
     const CustomTableInput = (props) => (
         <>
       <form onSubmit={(e) => {
@@ -78,7 +78,7 @@ export default function Test(props) {
           updateIngredient(props.row, props.positive ? e.target.name.value : -e.target.name.value);
         }}>
         <label>
-            <input defaultValue={ props.positive ?  props.row.lastQuantityIncrease : props.row.lastQuantityDecrease } onChange={(e) => ee = e.target.value} type="text" name="name" 
+            <input defaultValue={ props.positive ?  props.row.lastQuantityIncrease : props.row.lastQuantityDecrease } type="text" name="name" 
                 ref={ee => {
                     props.positive ? leftRef.current[(props.row.id - 1)] = ee : rightRef.current[(props.row.id - 1)] = ee
                 }} />
@@ -90,11 +90,10 @@ export default function Test(props) {
 
     const fetchCategories = () => {
 
-        fetch("http://localhost:8080/warehouse/categories")
+        fetch(SERVER + "/warehouse/categories")
         .then(res => res.json())
         .then(
           (result) => {
-              console.log(result)
               if(Object.keys(result).length != 0) {
                 setCategories(prev => {
                     return {
@@ -107,6 +106,14 @@ export default function Test(props) {
                 setActiveIngredientsList(result[0].ingredients)
                 setIngrNum(result[0].ingredients.length)
                 leftRef.current = leftRef.current.slice(0, result[0].ingredients.length);
+                console.log(leftRef)
+                leftRef.current = leftRef.current.map(
+                    o => {
+                        return({ ...o, customChecked : false })
+                    }
+                )
+               
+                console.log(leftRef)
                 rightRef.current = rightRef.current.slice(0, result[0].ingredients.length);
               } else 
               setCategories(prev => {
@@ -133,7 +140,7 @@ export default function Test(props) {
         let i = {...item}
         i.lastQuantityUpdate = Number(qty);
         //console.log(JSON.stringify(i))
-        return fetch("http://localhost:8080/warehouse/ingredient/", {
+        return fetch(SERVER + "/warehouse/ingredient/", {
             method: 'PUT',
             body: JSON.stringify(i),
             headers: {
@@ -148,23 +155,23 @@ export default function Test(props) {
 
     }
 
-    const updateAllChecked = (sRows) => {
+    const updateAllChecked = () => {
         leftRef.current.map((ref, index) => {
-            sRows[index].lastQuantityUpdate = ref.value
+            selectedRowsArr[index].lastQuantityUpdate = ref.value
         })
  
         console.log(selectedRowsArr)
         
-        fetch("http://localhost:8080/warehouse/ingredients/", {
+        fetch(SERVER + "/warehouse/ingredients/", {
             method: 'PUT',
-            body: JSON.stringify(sRows),
+            body: JSON.stringify(selectedRowsArr),
             headers: {
                 'Content-Type': 'application/json'
             }
         })
         .then(res => res.json())
         .then(res => {
-            createUpdateMsg(sRows);
+            createUpdateMsg(selectedRowsArr);
             fetchCategories();
       
         }).catch(err => console.log(err));
@@ -172,7 +179,13 @@ export default function Test(props) {
 
     const [selectedRows, setSelectedRows] = useState([])
     
-    const handleCheckboxes = () => {
+    const handleCheckboxes = (state) => {
+        console.log(state.selectedRows);
+        // leftRef.current = leftRef.current.map(
+        //     (o, index) => {
+        //         return({ ...o, customChecked : state.selectedRows[index].checked })
+        //     }
+        // )
         
     }
 
@@ -181,7 +194,7 @@ export default function Test(props) {
             {
                 name: 'Proizvod',
                 selector: 'name',
-                sortable: true,
+                sortable: true
             },
             {
                 name: 'Jedinica',
@@ -256,7 +269,7 @@ export default function Test(props) {
                                             paginationPerPage={5}
                                             paginationRowsPerPageOptions={[5, 10, 20, 30]}
                                             selectableRows
-                                            onSelectedRowsChange={row => selectedRowsArr = row.selectedRows}
+                                            onSelectedRowsChange={row => handleCheckboxes}
                                             subHeader={true}
                                             subHeaderComponent={
                                                 (
@@ -280,3 +293,16 @@ export default function Test(props) {
     </>
     )
 }
+
+function areEqual(prevProps, nextState) {
+    console.log(prevProps)
+    console.log(nextState)
+    return false;
+    /*
+    return true if passing nextProps to render would return
+    the same result as passing prevProps to render,
+    otherwise return false
+    */
+  }
+
+export default React.memo(Test, areEqual);

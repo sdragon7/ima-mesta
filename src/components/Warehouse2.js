@@ -5,7 +5,7 @@ import classnames from "classnames";
 import { getAllByPlaceholderText } from '@testing-library/react';
 import validator from 'validator';
 import DataTable, { createTheme } from 'react-data-table-component';
-
+import SERVER from '../server-host'
 
 
 
@@ -77,7 +77,7 @@ export default function Warehouse(props) {
     
 
     const fetchCategories = (initCall) => {
-        fetch("http://localhost:8080/warehouse/categories")
+        fetch(SERVER + "/warehouse/categories")
         .then(res => res.json())
         .then(
           (result) => {
@@ -118,7 +118,7 @@ export default function Warehouse(props) {
             }
    
 
-        fetch("http://localhost:8080/warehouse/ingredients/", {
+        fetch(SERVER + "/warehouse/ingredients/", {
             method: 'PUT',
             body: JSON.stringify(arr),
             headers: {
@@ -187,7 +187,7 @@ export default function Warehouse(props) {
         console.log(arrayOfMsgs)
         setChangeNotifiers([...changeNotifiers, { msgs : arrayOfMsgs,  color : "primary", date : new Date()}]);
 
-        fetch("http://localhost:8080/warehouse/messages/", {
+        fetch(SERVER + "/warehouse/messages/", {
             method: 'POST',
             body: JSON.stringify(arrayOfMsgs),
             headers: {
@@ -213,7 +213,7 @@ export default function Warehouse(props) {
         let i = {...item}
         i.lastQuantityUpdate = Number(qty);
         //console.log(JSON.stringify(i))
-        return fetch("http://localhost:8080/warehouse/ingredient/", {
+        return fetch(SERVER + "/warehouse/ingredient/", {
             method: 'PUT',
             body: JSON.stringify(i),
             headers: {

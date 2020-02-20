@@ -5,6 +5,8 @@ import {
  
 import { TableContext } from "./TableContext.js"
 
+import SERVER from '../server-host'
+
 export default function RightColumn(props) {
 
     const context = useContext(TableContext);
@@ -51,7 +53,7 @@ export default function RightColumn(props) {
     }
 
     useEffect(() => {
-        fetch("http://localhost:8080/test")
+        fetch(SERVER + "/test")
         .then(res => res.json())
         .then(
           (result) => {

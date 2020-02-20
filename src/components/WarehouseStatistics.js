@@ -5,6 +5,7 @@ import DatePicker from 'react-datepicker'
 import "react-datepicker/dist/react-datepicker.css";
 import DataTable, { createTheme } from 'react-data-table-component';
 import { storiesOf } from '@storybook/react';
+import SERVER from '../server-host'
 
 export default function WarehouseStatistics(props) {
 
@@ -53,7 +54,7 @@ export default function WarehouseStatistics(props) {
       }
 
       useEffect(() => {
-        fetch("http://localhost:8080/warehouse/categories")
+        fetch(SERVER + "/warehouse/categories")
         .then(res => res.json())
         .then(
           (result) => {
@@ -81,7 +82,7 @@ export default function WarehouseStatistics(props) {
     }, [])
 
     useEffect(() => {
-        fetch("http://localhost:8080/warehouse/statistics/list", {
+        fetch(SERVER + "/warehouse/statistics/list", {
             method : "POST",
             headers: {
                 'Content-Type': 'application/json'
