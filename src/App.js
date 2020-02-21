@@ -8,6 +8,7 @@ import Warehouse from './components/Warehouse'
 import Test from './components/Test'
 import WarehouseStatistics from './components/WarehouseStatistics'
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import New from './components/New';
 
 function App() {
 
@@ -53,6 +54,11 @@ function App() {
                   />
                   <Route path="/warehouse/statistics" render={props => <WarehouseStatistics {...props} />} />
                   <Route path="/test" render={props => <Test {...props} />} />
+                  <Route
+                    exact
+                    path="/add"
+                    render={props => <New {...props} />}
+                  />
                   <Redirect to="/" />
                 </Switch>
               </Switch>
