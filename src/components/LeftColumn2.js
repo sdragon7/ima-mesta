@@ -5,8 +5,55 @@ import classnames from "classnames";
 import {TableConsumer} from './TableContext';
 import { TableContext } from "./TableContext.js"
 
+
+import { withStyles, makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 export default function LeftColumn(props) {
 
+
+  const StyledTableCell = withStyles(theme => ({
+    head: {
+      backgroundColor: theme.palette.common.black,
+      color: theme.palette.common.white,
+    },
+    body: {
+      fontSize: 14,
+    },
+  }))(TableCell);
+
+  const StyledTableRow = withStyles(theme => ({
+    root: {
+      '&:nth-of-type(odd)': {
+        backgroundColor: theme.palette.background.default,
+      },
+    },
+  }))(TableRow);
+
+  const rows = [
+    createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
+    createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
+    createData('Eclair', 262, 16.0, 24, 6.0),
+    createData('Cupcake', 305, 3.7, 67, 4.3),
+    createData('Gingerbread', 356, 16.0, 49, 3.9),
+  ];
+  function createData(name, calories, fat, carbs, protein) {
+    return { name, calories, fat, carbs, protein };
+  }
+
+  
+  const useStyles = makeStyles({
+    table: {
+      minWidth: 700,
+    },
+  });
+  const classes = useStyles();
 const context = useContext(TableContext);
 const activeTable = context.activeTable;
   
@@ -22,15 +69,13 @@ useEffect(() => {
     let t = 0;
     if(activeTable.orders.length > 0) {
         activeTable.orders.forEach((o) => {
-        if(o.checked && o.myTab === activeTable.activeTab) {
+        if(o.checked && (o.myTab + "" === activeTable.activeTab + "")) {
           ts += o.quantity * o.product.price
         }
         t += o.quantity * o.product.price;
       })
     }
-
     context.setTotalSelected(ts);
-    
 },[activeTable.orders, activeTable.activeTab]);
 
     return(
@@ -42,9 +87,9 @@ useEffect(() => {
           <Nav pills style={{cursor : 'pointer'}} className="p-2" id="bill-pills">
               {
                 activeTable.tabsToRender.map(
-                  ttRender => {
+                  (ttRender, index) => {
                     return (
-                      <NavItem>
+                      <NavItem key={index}>
                       <NavLink
                         className={classnames({ active: activeTable.activeTab === ttRender.tabNumber })}
                         onClick={() => { context.setTableActiveTab(activeTable, ttRender.tabNumber + ""); }}
@@ -67,18 +112,33 @@ useEffect(() => {
             {
               activeTable.tabsToRender.map(
                 (ttRender, index) => {
-                  console.log(ttRender + 'tabcina')
                   return (
                     <>
                     <TabPane key={index}  tabId= {ttRender.tabNumber } >
-                      <BottomScrollListener debounce = "0" onBottom = {() => {}}>
+                      {/* <BottomScrollListener debounce = "0" onBottom = {() => {}}>
                         { scrollRef => (
-                      <div  ref = {scrollRef} style = {{height :"250px" ,overflowY : "scroll"}}>
-                        <TableBsr striped>
+                      <div  ref = {scrollRef} style = {{height :"100px" ,overflowY : "scroll"}}> </div>
+                        )}
+                </BottomScrollListener>  */}
+                
+              
+              </TabPane>
+              
+              </>
+                  )
+
+                }
+
+              )
+                
+            }     
+            </TabContent>
+
+            <TableBsr striped>
                           <thead>
                             <tr>
                               <th>Proizvod</th>
-                              {/* <th>Cena</th> */}
+                             
                               <th>Kolicina</th>
                               <th>Ukupno</th>
                               <th></th>
@@ -87,19 +147,19 @@ useEffect(() => {
                             </tr>
                           </thead>
                           <tbody>
-                            {activeTable.orders.filter(o => (o.myTab === activeTable.activeTab)).map((order, index) => {
+                            {activeTable.orders.filter(o => (o.myTab + "" === activeTable.activeTab)).map((order, index) => {
                               return (
                                 <tr key={index}>
                                 
                                   <td>{order.product.name}</td>
-                                  {/* <td>{order.product.price}</td> */}
+                            
                                   <td>{order.quantity}</td>
                                   <td>{order.quantity * order.product.price}</td>
                                   <td>
                                     <Button
                                       color="success"
                                       onClick={() => {
-                                        context.increaseQuantity(order.product.id, order.product.price, order);
+                                        context.increaseQuantity(order);
                                       
                                       }}
                                     >
@@ -110,7 +170,7 @@ useEffect(() => {
                                     <Button
                                       color="danger"
                                       onClick={() => {
-                                        context.decreaseQuantity(order.product.id, order.product.price, order);
+                                        context.decreaseQuantity(order);
                                       }}
                                     >
                                       -
@@ -135,24 +195,8 @@ useEffect(() => {
                          
                           </tbody>
                         </TableBsr>
-                </div>
-
-                        )}
-                </BottomScrollListener>
-                <h3>Pojedinacno : {context.totalSelected}</h3>
+    <h3>Pojedinacno : {context.totalSelected}</h3>
                 <h3>Ukupno za sto : {activeTable.total}</h3>
-              
-              </TabPane>
-              
-              </>
-                  )
-
-                }
-
-              )
-                
-            }     
-            </TabContent>
             <div>
                 <Button color = "success" onClick = { () => {context.checkPlease()}} > NAPLATI </Button>
                 {' '}
@@ -168,6 +212,8 @@ useEffect(() => {
         }
 
     }
+
+    
       </TableConsumer>
 
     )

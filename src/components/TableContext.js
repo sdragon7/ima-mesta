@@ -24,33 +24,47 @@ export class TableProvider extends React.Component {
                 this.setState({ activeTable : activeTable })
             },
             checkPlease : () => {
-                var orders = [...this.state.activeTable.orders]
-                let totalPrice = 0
-                let newOrders = orders.filter(
-                    (order => (!( order.checked && order.myTab === this.state.activeTable.activeTab ))))
+                let activeTable = this.state.activeTable
+                // var orders = [...this.state.activeTable.orders]
+                // let totalPrice = 0
+                // let newOrders = activeTable.orders.filter(
+                //     (order => (!( order.checked && order.myTab === this.state.activeTable.activeTab ))))
 
-                newOrders.map(order => {  totalPrice += order.product.price * order.quantity })
+                //newOrders.map(order => {  totalPrice += order.product.price * order.quantity })
 
                 //fetch...
-                let paidOrders = orders.filter(
-                    (order => (( order.checked && order.myTab === this.state.activeTable.activeTab ))))
+                let selectedOrders = activeTable.orders.filter(
+                    (order => ( order.checked && order.myTab + "" === this.state.activeTable.activeTab + "" )))
 
+                    console.log(selectedOrders)
 
+                fetch(SERVER + "/table/orders/pay", {
+                    method: 'POST',
+                    body: JSON.stringify({ tableNumber : activeTable.tableNumber, orders : selectedOrders }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res1 => res1.json())
+                .then(res1 => {
+                    this.setState({activeTable: res1})
+                
+                }).catch(err => console.log(err));
                     
 
-                let activeTable = this.state.activeTable
-                activeTable.orders = newOrders
-                if(totalPrice === 0) {
-                    activeTable.tableColor = "success"
-                    activeTable.tabsToRender = [{ tabNumber : "1" }, { tabNumber : "2" }]
-                }
-                activeTable.isDraggable = true
-                activeTable.total = totalPrice
-                activeTable.activeTab = "1"
-                let tabsToRender = [...activeTable.tabsToRender]
-                tabsToRender.map((tab, index) => { activeTable.tabsToRender.push({tabNumber : index + ""}) })
-                activeTable.tabsToRender = tabsToRender
-                this.setState({ activeTable : activeTable, showTables : true})
+                // let activeTable = this.state.activeTable
+                // activeTable.orders = newOrders
+                // if(totalPrice === 0) {
+                //     activeTable.tableColor = "success"
+                //     activeTable.tabsToRender = [{ tabNumber : "1" }, { tabNumber : "2" }]
+                // }
+                // activeTable.isDraggable = true
+                // activeTable.total = totalPrice
+                // activeTable.activeTab = "1"
+                // let tabsToRender = [...activeTable.tabsToRender]
+                // tabsToRender.map((tab, index) => { activeTable.tabsToRender.push({tabNumber : index + ""}) })
+                // activeTable.tabsToRender = tabsToRender
+                // this.setState({ activeTable : activeTable, showTables : true})
                 
 
             },
@@ -87,26 +101,46 @@ export class TableProvider extends React.Component {
                     y : 0
                 }       
             },
-            addProductToActiveTab : (p, table) => {
+            addProductToActiveTab : (p) => {
                 let activeTable = this.state.activeTable
 
-                const res = activeTable.orders.filter(order => (
-                    (order.product.name === p.name) && (order.myTab === activeTable.activeTab)));
-                
-                if(res.length === 0) {
-                    activeTable.orders.push({
+                // const res = activeTable.orders.filter(order => (
+                //     (order.product.name === p.name) && (order.myTab === activeTable.activeTab)));
+
+                fetch(SERVER + "/table/add/order", {
+                    method: 'PUT',
+                    body: JSON.stringify({ tableNumber : activeTable.tableNumber, orders : [{
                         checked: true,
                         product : { id : p.id, name : p.name, price : p.price},
                         quantity : 1,
                         myTab : activeTable.activeTab
-                    })
-                } else {
-                    res[0].quantity = res[0].quantity + 1;
-                }
+                    }] }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res1 => res1.json())
+                .then(res1 => {
+                    console.log(res1)
+                    // if(res.length === 0) {
+                    //     //add order on server
+                    //     activeTable.orders.push({
+                    //         checked: true,
+                    //         product : { id : p.id, name : p.name, price : p.price},
+                    //         quantity : 1,
+                    //         myTab : activeTable.activeTab
+                    //     })
+                    // } else {
+                    //     //update qu on server
+                    //     res[0].quantity = res[0].quantity + 1;
+                    // }
+
+                    // activeTable.total = activeTable.total + p.price
                 
-                activeTable.total = activeTable.total + p.price
-                
-                this.setState({activeTable: this.state.activeTable, totalSelected: this.state.totalSelected + p.price})
+                    // , totalSelected: this.state.totalSelected + p.price
+                    this.setState({activeTable: res1, totalSelected : this.state.totalSelected + p.price})
+              
+                }).catch(err => console.log(err));
             }
             ,
             setTableActiveTab : (table, activeTab) => {
@@ -115,55 +149,63 @@ export class TableProvider extends React.Component {
             },
             setTableOrders : (order) => {
                 var orders = [...this.state.activeTable.orders]
+
+                let newActiveTable = this.state.activeTable
+                newActiveTable.orders =  orders.map(o => {
+                if(order.product.id !== o.product.id || order.myTab + "" !== o.myTab + "") return o;
+                else return { ...order, checked : !order.checked }
                 
+                })
 
-                   let newActiveTable = this.state.activeTable
-                   newActiveTable.orders =  orders.map(o => {
-                    if(order.product.id !== o.product.id) return o;
-                    else return { ...order, checked : !order.checked }
-                   
-                  })
-
-                  this.setState(prev => ({ activeTable : newActiveTable, totalSelected : this.state.totalSelected - order.product.price * order.quantity })) 
+                this.setState(prev => ({ activeTable : newActiveTable, totalSelected : this.state.totalSelected - order.product.price * order.quantity })) 
             },
-            increaseQuantity : (id, price, order) => {
-                var orders = [...this.state.activeTable.orders]
+            increaseQuantity : (o) => {
+                let activeTable = this.state.activeTable
 
-                     orders.map(order => {
-                        if(order.product.id === id && this.state.activeTable.activeTab === order.myTab)
-                            order.quantity = order.quantity + 1    
-                    })    
-
-                    let newActiveTable = this.state.activeTable
-                    newActiveTable.orders = orders
-                    newActiveTable.total = newActiveTable.total + price
-
-                    this.setState(prev => ({ activeTable : newActiveTable }))
-                
+                fetch(SERVER + "/table/increase/order", {
+                    method: 'PUT',
+                    body: JSON.stringify({ tableNumber : activeTable.tableNumber, orders : [o] }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res1 => res1.json())
+                .then(res1 => {
+                    this.setState({activeTable: res1})
+              
+                }).catch(err => console.log(err));
             },
-            decreaseQuantity : (id, price, order) => {
-                var orders = [...this.state.activeTable.orders]
+            decreaseQuantity : (o) => {
+                let activeTable = this.state.activeTable
 
-                     orders.map((order, index) => {
-                         if(order.quantity === 1) {
-                             orders.splice(index, 1)
-                         }
-                        if(order.product.id === id && this.state.activeTable.activeTab === order.myTab)
-                            order.quantity = order.quantity - 1    
-                    })    
-
-                    let newActiveTable = this.state.activeTable
-                    newActiveTable.orders = orders
-                    newActiveTable.total = newActiveTable.total - price
-
-                    this.setState(prev => ({ activeTable : newActiveTable }))
+                fetch(SERVER + "/table/decrease/order", {
+                    method: 'PUT',
+                    body: JSON.stringify({ tableNumber : activeTable.tableNumber, orders : [o] }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res1 => res1.json())
+                .then(res1 => {
+                    this.setState({activeTable: res1})
+              
+                }).catch(err => console.log(err));
             },
             addNewTab : () => {
                 let activeTable = this.state.activeTable
-                let activeTabNumber = (activeTable.tabsToRender.length + 1) + ""
-                activeTable.tabsToRender.push({"tabNumber": "" + activeTabNumber})
-                activeTable.activeTab = activeTabNumber
-                this.setState({ activeTable : activeTable })
+
+                fetch(SERVER + "/table/add/tab", {
+                    method: 'PUT',
+                    body: JSON.stringify({ tableNumber : activeTable.tableNumber }),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res1 => res1.json())
+                .then(res1 => {
+                    this.setState({activeTable: res1})
+              
+                }).catch(err => console.log(err));
             }
         }
     }

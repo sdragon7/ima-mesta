@@ -22,7 +22,6 @@ export default function RightColumn(props) {
     let products = []
 
     if(!productCategories.isLoading) {
-        console.log(productCategories)
         productCategories.list.map(category => {
             if(category.name === productCategories.activeProductCategory.name)
                 category.items.map(item => {
@@ -40,9 +39,9 @@ export default function RightColumn(props) {
                         { 
                             products.map((p, index) => {
                                 return (
-                                    <Card style={{boxShadow : '0 10px 6px -4px black'}}>
+                                    <Card key={index} style={{boxShadow : '0 10px 6px -4px black'}}>
                                         <CardImg top width="100%" src={"data:image/jpeg;base64," + p.image} alt="Card image cap" /> 
-                                        <Button onClick={ () => context.addProductToActiveTab(p, context.activeTable) } >{ p.name } { p.price }</Button>
+                                        <Button onClick={ () => context.addProductToActiveTab(p) } >{ p.name } { p.price }</Button>
                                     </Card>
                                 )
                             })
