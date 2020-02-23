@@ -87,6 +87,8 @@ import Box from "@material-ui/core/Box";
         const classesForTabs = useStylesForTabs()
 
 
+        const [data, setData] = useState([[],[]])
+
         const categoryColumns = [
             [
                 { title: "Kategorija", field: "name"}
@@ -134,7 +136,6 @@ import Box from "@material-ui/core/Box";
             categoryColumns[0]
         )
 
-        const [ data, setData ] = useState([[],[]])
 
         
         const tableIcons = {
@@ -158,33 +159,58 @@ import Box from "@material-ui/core/Box";
         };
 
 
-        const fetchCategories = () => {
-            fetch(SERVER +  "/warehouse/categories")
+        const fetchAll = async () => {
+            let newData = data.slice();
+            await fetch(SERVER +  "/warehouse/categories")
             .then(res => res.json())
             .then(
                 (res) => {
                     setIngredientCategories({list : res});
-                    let newData = data.slice();
                     newData[0] = res;
-                
-                    setData(newData);
-                    console.log(res);
+                  
                 }
             )
-    
+            await  fetch(SERVER + "/warehouse/ingredients")
+            .then(res => res.json())
+            .then(
+                (res) => {
+                    newData[1] = res;
+                }
+            )
+            setData(newData)
+
+
         }
 
-        // const fetchIngredients = () => {
+        // const fetchCategories =  () => {
+        //     fetch(SERVER +  "/warehouse/categories")
+        //     .then(res => res.json())
+        //     .then(
+        //         (res) => {
+        //             setIngredientCategories({list : res});
+        //             console.log("got categ")
+        //             return res;
+        //             // let newData = data.slice();
+        //             // newData[0] = res;
+        //             // newData[1] =  fetchIngredients();
+        //             // console.log("uzeo sam ingrediente")
+
+        //             // setData(newData);
+        //         }
+        //     )
+    
+        // }
+
+        // const fetchIngredients  =  () => {
 
         //     fetch(SERVER + "/warehouse/ingredients")
         //     .then(res => res.json())
         //     .then(
         //         (res) => {
         //             setIngredients({list : res});
-        //             let newData = data.slice();
-        //             newData[1] = res;
-        //             setData(newData);
-        //             console.log(res);
+        //             console.log("got ingr")
+
+        //             return res;
         //         }
         //     )
         // }
@@ -209,7 +235,8 @@ import Box from "@material-ui/core/Box";
                     'Content-Type': 'application/json'
                 }
             }).then(
-                () => {  //fetchIngredients()
+                () => {  
+                    fetchAll();
                 }              
             )
 
@@ -224,7 +251,7 @@ import Box from "@material-ui/core/Box";
                     'Content-Type': 'application/json'
                 }
             }).then(
-                () => {  fetchCategories()}              
+                () => {  fetchAll()}              
             )
 
         }
@@ -244,9 +271,9 @@ import Box from "@material-ui/core/Box";
             if(inputLabel2.current !== null)
                 setLabelWidth2(inputLabel2.current.offsetWidth);
 
-            fetchCategories();
+            //fetchCategories();
             //fetchIngredients();
-
+            fetchAll();
 
         }, []);
 
@@ -286,7 +313,7 @@ import Box from "@material-ui/core/Box";
                             <div className = "mb-2">
                             <FormControl className={classes.formControl}>
                                 <TextField
-                                    id="outlined-helperText"
+                                    id="outlined-helperText1"
                                     label="Nova kategorija"
                                     variant="outlined"
                                     value = {newCategoryName}
@@ -311,7 +338,7 @@ import Box from "@material-ui/core/Box";
                             <div className = "mb-2">
                                 <FormControl className={classes.formControl}>
                                     <TextField
-                                        id="outlined-helperText"
+                                        id="outlined-helperText2"
                                         label="Novi sastojak"
                                         variant="outlined"
                                         value = {name}
@@ -383,7 +410,7 @@ import Box from "@material-ui/core/Box";
                                 <FormControl className = {classes.formControl} >
                                     <TextField
                                         size = "small"
-                                        id="outlined-helperText"
+                                        id="outlined-helperText3"
                                         label="Pocetna kolicina"
                                         variant="outlined"
                                         value = {qty}
