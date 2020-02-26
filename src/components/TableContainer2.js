@@ -14,15 +14,12 @@ export default function TableContainer(props) {
     if(context.showTables) {
       if(context.floors.length > 0) {
           context.floors.filter(floor => (floor.floorName === context.currentFloorName))[0].tables.map((table, index) => {
-            returnTables.push(<div key = {table.id}>
+            returnTables.push(
               <Table2 
                 key = {context.currentFloorName + index }
-                table = {table} 
-                setActiveTable = {context.setActiveTable}
-                updateCoordinatesOfSelectedTable = {context.updateCoordinatesOfSelectedTable}
-                addProductToActiveTab = {context.addProductToActiveTab}
-                />
-            </div>)
+                table = {table}
+                updateCoordinatesOfSelectedTable = {context.updateCoordinatesOfSelectedTable} />
+            )
         })
       }
       return (

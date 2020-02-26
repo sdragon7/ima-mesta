@@ -25,18 +25,8 @@ export class TableProvider extends React.Component {
             },
             checkPlease : () => {
                 let activeTable = this.state.activeTable
-                // var orders = [...this.state.activeTable.orders]
-                // let totalPrice = 0
-                // let newOrders = activeTable.orders.filter(
-                //     (order => (!( order.checked && order.myTab === this.state.activeTable.activeTab ))))
-
-                //newOrders.map(order => {  totalPrice += order.product.price * order.quantity })
-
-                //fetch...
                 let selectedOrders = activeTable.orders.filter(
-                    (order => ( order.checked && order.myTab + "" === this.state.activeTable.activeTab + "" )))
-
-                    console.log(selectedOrders)
+                    (order => ( order.checked && order.myTab + "" === activeTable.activeTab + "" )))
 
                 fetch(SERVER + "/table/orders/pay", {
                     method: 'POST',
@@ -47,29 +37,12 @@ export class TableProvider extends React.Component {
                 })
                 .then(res1 => res1.json())
                 .then(res1 => {
-                    this.setState({activeTable: res1})
+                    this.setFloorsAndActiveTable(res1)
                 
                 }).catch(err => console.log(err));
-                    
-
-                // let activeTable = this.state.activeTable
-                // activeTable.orders = newOrders
-                // if(totalPrice === 0) {
-                //     activeTable.tableColor = "success"
-                //     activeTable.tabsToRender = [{ tabNumber : "1" }, { tabNumber : "2" }]
-                // }
-                // activeTable.isDraggable = true
-                // activeTable.total = totalPrice
-                // activeTable.activeTab = "1"
-                // let tabsToRender = [...activeTable.tabsToRender]
-                // tabsToRender.map((tab, index) => { activeTable.tabsToRender.push({tabNumber : index + ""}) })
-                // activeTable.tabsToRender = tabsToRender
-                // this.setState({ activeTable : activeTable, showTables : true})
-                
-
             },
             setActiveTable : (table) => {
-                this.setState({ activeTable : table, showTables : false, activeOrders : table.orders })
+                this.setState({ activeTable : table, showTables : false })
             },
             setShowTableView : () => {
                 this.setState({ showTables : !this.state.showTables })
@@ -121,24 +94,7 @@ export class TableProvider extends React.Component {
                 })
                 .then(res1 => res1.json())
                 .then(res1 => {
-                    console.log(res1)
-                    // if(res.length === 0) {
-                    //     //add order on server
-                    //     activeTable.orders.push({
-                    //         checked: true,
-                    //         product : { id : p.id, name : p.name, price : p.price},
-                    //         quantity : 1,
-                    //         myTab : activeTable.activeTab
-                    //     })
-                    // } else {
-                    //     //update qu on server
-                    //     res[0].quantity = res[0].quantity + 1;
-                    // }
-
-                    // activeTable.total = activeTable.total + p.price
-                
-                    // , totalSelected: this.state.totalSelected + p.price
-                    this.setState({activeTable: res1, totalSelected : this.state.totalSelected + p.price})
+                    this.setFloorsAndActiveTable(res1)
               
                 }).catch(err => console.log(err));
             }
@@ -171,7 +127,7 @@ export class TableProvider extends React.Component {
                 })
                 .then(res1 => res1.json())
                 .then(res1 => {
-                    this.setState({activeTable: res1})
+                    this.setFloorsAndActiveTable(res1)
               
                 }).catch(err => console.log(err));
             },
@@ -187,7 +143,7 @@ export class TableProvider extends React.Component {
                 })
                 .then(res1 => res1.json())
                 .then(res1 => {
-                    this.setState({activeTable: res1})
+                    this.setFloorsAndActiveTable(res1)
               
                 }).catch(err => console.log(err));
             },
@@ -203,7 +159,7 @@ export class TableProvider extends React.Component {
                 })
                 .then(res1 => res1.json())
                 .then(res1 => {
-                    this.setState({activeTable: res1})
+                    this.setFloorsAndActiveTable(res1)
               
                 }).catch(err => console.log(err));
             }
@@ -215,7 +171,6 @@ export class TableProvider extends React.Component {
         .then(res => res.json())
         .then(
           (result) => {
-              console.log(result)
               this.setState({ floors : result })
                
           },
@@ -234,6 +189,25 @@ export class TableProvider extends React.Component {
         )
     }
 
+    setFloorsAndActiveTable = (table) => {
+        this.setState({
+            floors : 
+                this.state.floors.map(floor => {
+                        if(floor.floorName !== this.state.currentFloorName) return floor;
+                        else  {
+                            let newTableArray = floor.tables.map(
+                                t => {
+                                    if(t.tableNumber !== this.state.activeTable.tableNumber) return t;
+                                    else return table;
+                                }
+                            )
+
+                            return {...floor, tables : newTableArray}
+                        }
+                    })
+        , activeTable : table})
+    }
+
 
     getTablesOnCurrentFloor = () => {
         const {floors, currentFloorName} = this.state;
@@ -243,74 +217,72 @@ export class TableProvider extends React.Component {
     }
 
     addTable = () => {
-        let tables = this.getTablesOnCurrentFloor();
-        const {floors, currentFloorName} = this.state;
-
-        if(tables.length === 0) {
-            tables = []
-            tables.push({ 
-            orders : [
-            //     {
-            //     checked: true,
-            //     product : { id : 1111, name : 'Pivo', price : 120},
-            //     quantity : 30,
-            //     myTab : "1"
-            // },
-            // {
-            //     checked: true,
-            //     product : { id : 2222, name : 'Sok', price : 120},
-            //     quantity : 15,
-            //     myTab : "1"
-            // },
-            // {
-            //     checked: true,
-            //     product : { id : 3333, name : 'whatever', price : 100},
-            //     quantity : 17,
-            //     myTab : "2"
-            // }
-            
-            ], 
-            total : 0,
-            isDraggable : true,
-            activeTab: "1",    
-            numberOfTabs : 3,
-            tabsToRender : [{tabNumber : "1"}, { tabNumber : "2"}],
-            tableNumber: 1, //visak
-            tableColor: "danger",
-            controlledPosition    : {
-                x : 25,
-                y : 25
-            }
-
-            })
-        }
-        else {
-          let maxVal = Math.max.apply(Math, tables.map(function(obj) { return obj.tableNumber; }));
-          maxVal++;
-          tables.push({
-            orders : [], 
-            total : 0,
-            isDraggable : true,
-            activeTab: "1",    
-            numberOfTabs : 2,
-            tabsToRender : [{tabNumber : "1"}],
-            tableNumber: maxVal, //visak
-            tableColor: "success",
-            controlledPosition    : {
-                x : 25 * maxVal,
-                y : 25* maxVal
-            }
-                
-            })
-        }
-
-        const  newFloorArray = floors.map( floor => {
-            if(floor.floorName !== currentFloorName) return floor;
-            else {
-                return {...floor, tables : tables};
-            }
+        fetch(SERVER + "/table/add/new?floorName=" + this.state.currentFloorName, {
+            method: 'POST'
         })
-        this.setState({ floors : newFloorArray })
+        .then(res1 => res1.json())
+        .then(res1 => {
+            this.setState(prev => ({
+                floors : 
+                    this.state.floors.map(floor => {
+                        if(floor.floorName !== this.state.currentFloorName) return floor;
+                        else  {
+                            let newTableArray = floor.tables;
+                            newTableArray.push(res1);
+                            return {...floor, tables : newTableArray}
+                        }
+                    })
+                }))
+        }).catch(err => console.log(err));
+
+        // let tables = this.getTablesOnCurrentFloor();
+        // const {floors, currentFloorName} = this.state;
+
+        // if(tables.length === 0) {
+        //     tables = []
+        //     tables.push({ 
+        //     orders : [], 
+        //     total : 0,
+        //     isDraggable : true,
+        //     activeTab: "1",    
+        //     numberOfTabs : 3,
+        //     tabsToRender : [{tabNumber : "1"}, { tabNumber : "2"}],
+        //     tableNumber: 1, //visak
+        //     tableColor: "danger",
+        //     controlledPosition    : {
+        //         x : 25,
+        //         y : 25
+        //     }
+
+        //     })
+        // }
+        // else {
+        //   let maxVal = Math.max.apply(Math, tables.map(function(obj) { return obj.tableNumber; }));
+        //   maxVal++;
+        //   tables.push({
+        //     orders : [], 
+        //     total : 0,
+        //     isDraggable : true,
+        //     activeTab: "1",    
+        //     numberOfTabs : 2,
+        //     tabsToRender : [{tabNumber : "1"}],
+        //     tableNumber: maxVal, //visak
+        //     tableColor: "success",
+        //     controlledPosition    : {
+        //         x : 25 * maxVal,
+        //         y : 25* maxVal
+        //     }
+                
+        //     })
+        // }
+
+        // const  newFloorArray = floors.map( floor => {
+        //     if(floor.floorName !== currentFloorName) return floor;
+        //     else {
+        //         return {...floor, tables : tables};
+        //     }
+        // })
+        // this.setState({ floors : newFloorArray })
       }
 
     deleteTable = () => {
@@ -355,21 +327,34 @@ export class TableProvider extends React.Component {
     }
 
     updateCoordinatesOfSelectedTable = (controlledPosition, tableNumber) => {
-        const {floors, currentFloorName} = this.state;
-        const tables  = this.getTablesOnCurrentFloor().map(
-            t => (t.tableNumber !== tableNumber) ?
-                t
-                :
-               {...t, controlledPosition : controlledPosition}
-        );
-
-        const  newFloorArray = floors.map( floor => {
-            if(floor.floorName !== currentFloorName) return floor;
-            else {
-                return {...floor, tables : tables};
+        fetch(SERVER + "/table/update/position", {
+            method: 'PUT',
+            body: JSON.stringify({ tableNumber : tableNumber, controlledPosition : controlledPosition }),
+            headers: {
+                'Content-Type': 'application/json'
             }
+
         })
-        this.setState({ floors : newFloorArray })
+        .then(res1 => res1.json())
+        .then(res1 => {
+            this.setFloorsAndActiveTable(res1)
+        }).catch(err => console.log(err));
+
+        // const {floors, currentFloorName} = this.state;
+        // const tables  = this.getTablesOnCurrentFloor().map(
+        //     t => (t.tableNumber !== tableNumber) ?
+        //         t
+        //         :
+        //        {...t, controlledPosition : controlledPosition}
+        // );
+
+        // const  newFloorArray = floors.map( floor => {
+        //     if(floor.floorName !== currentFloorName) return floor;
+        //     else {
+        //         return {...floor, tables : tables};
+        //     }
+        // })
+        // this.setState({ floors : newFloorArray })
     }
 
     render() {
