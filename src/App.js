@@ -9,6 +9,7 @@ import Test from './components/Test'
 import WarehouseStatistics from './components/WarehouseStatistics'
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import New from './components/New';
+import WarehouseMUI from './components/WarehouseMUI'
 
 function App() {
 
@@ -58,6 +59,11 @@ function App() {
                     exact
                     path="/add"
                     render={props => <New {...props} />}
+                  />
+                   <Route
+                    exact
+                    path="/mui"
+                    render={props => <WarehouseMUI {...props} />}
                   />
                   <Redirect to="/" />
                 </Switch>
