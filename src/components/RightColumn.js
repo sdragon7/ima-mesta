@@ -52,7 +52,7 @@ export default function RightColumn(props) {
     }
 
     useEffect(() => {
-        fetch(SERVER + "/test")
+        fetch(SERVER + "/category/list")
         .then(res => res.json())
         .then(
           (result) => {

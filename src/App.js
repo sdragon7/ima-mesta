@@ -6,7 +6,8 @@ import KeyPad from './components/KeyPad';
 import Idle from 'react-idle';
 import Warehouse from './components/Warehouse'
 import Test from './components/Test'
-import WarehouseStatistics from './components/WarehouseStatistics'
+import WarehouseStatistics from './components/Wh'
+import ProductAdd from './components/ProductAdd'
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import New from './components/New';
 import WarehouseMUI from './components/WarehouseMUI'
@@ -54,6 +55,7 @@ function App() {
                     render={props => <Warehouse {...props} />}
                   />
                   <Route path="/warehouse/statistics" render={props => <WarehouseStatistics {...props} />} />
+                  <Route path="/add/product" render={props => <ProductAdd {...props} />} />
                   <Route path="/test" render={props => <Test {...props} />} />
                   <Route
                     exact
